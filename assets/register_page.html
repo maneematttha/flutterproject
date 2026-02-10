@@ -46,6 +46,14 @@
             border-color: #ff69b4;
         }
 
+        /* ส่วนข้อแนะนำรหัสผ่าน */
+        .password-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
         button { 
             width: 100%; 
             padding: 12px; 
@@ -85,6 +93,9 @@
         <div class="input-group">
             <label for="password">รหัสผ่าน:</label>
             <input type="password" id="password" name="password" placeholder="กำหนดรหัสผ่าน" required>
+            <div class="password-hint">
+                * อย่างน้อย 9 ตัวอักษร (A-Z, a-z, 0-9)
+            </div>
         </div>
 
         <div class="input-group">
@@ -113,33 +124,47 @@
         const pass = document.getElementById('password').value;
         const phone = document.getElementById('phone').value;
 
+        // 1. ตรวจสอบชื่อผู้ใช้
         if (user === "") {
             alert("กรุณากรอกชื่อผู้ใช้งานก่อนครับ");
             return;
         }
 
+        // 2. ตรวจสอบรูปแบบอีเมล
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
-            alert("รูปแบบอีเมลไม่ถูกต้อง กรุณาใส่ @ และชื่อโดเมนให้ถูกต้อง (เช่น @gmail.com)");
+            alert("รูปแบบอีเมลไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
             return;
         }
 
+        // 3. ตรวจสอบความปลอดภัยรหัสผ่าน (มาตรฐาน 9 ตัวอักษร + ตัวใหญ่ + ตัวเล็ก + ตัวเลข)
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{9,}$/;
+        if (!passwordPattern.test(pass)) {
+            alert("รหัสผ่านไม่ตรงตามมาตรฐานความปลอดภัย:\n" +
+                  "- ต้องมีความยาวอย่างน้อย 9 ตัวอักษร\n" +
+                  "- ต้องมีตัวพิมพ์ใหญ่ (A-Z) อย่างน้อย 1 ตัว\n" +
+                  "- ต้องมีตัวพิมพ์เล็ก (a-z) อย่างน้อย 1 ตัว\n" +
+                  "- ต้องมีตัวเลข (0-9) อย่างน้อย 1 ตัว");
+            return;
+        }
+
+        // 4. ตรวจสอบเบอร์โทรศัพท์
         if (phone.length !== 9) {
             alert("กรุณากรอกเบอร์โทรศัพท์ให้ครบ 9 หลักครับ (ตอนนี้มี " + phone.length + " หลัก)");
             return;
         }
 
+        // ยืนยันการลงทะเบียน
         const isConfirmed = confirm("คุณต้องการยืนยันการลงทะเบียนใช่หรือไม่?");
 
         if (isConfirmed) {
             alert("ลงทะเบียนสำเร็จ! กำลังกลับไปหน้า Login...");
             
-            // --- แก้ไขตรงนี้เพื่อส่งคำสั่งกลับหา Flutter ---
+            // ส่งคำสั่งกลับไปยัง Flutter NavigationChannel
             if (window.NavigationChannel) {
-                // ส่งข้อความ 'back_to_login' ไปยัง JavaScriptChannel ชื่อ 'NavigationChannel' ใน Flutter
                 window.NavigationChannel.postMessage('back_to_login');
             } else {
-                // สำหรับการทดสอบบน Browser ทั่วไป
+                // สำหรับทดสอบบน Browser ทั่วไป
                 const baseUrl = window.location.origin;
                 window.location.href = baseUrl + "/#/LoginPage";
             }
