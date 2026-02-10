@@ -9,17 +9,29 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  final data = Get.arguments;
-
-  // Filtered menu items based on search query
+  // เก็บรายการอาหาร
   List _filteredMenuItems = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredMenuItems = data;
-    print(data);
-    // Initialize filtered menu items with all menu items
+    // รับข้อมูลและเพิ่มฟิลด์ 'quantity' เป็น 1 เริ่มต้นให้กับทุกรายการ
+    var rawData = Get.arguments as List;
+    _filteredMenuItems = rawData.map((item) {
+      var newItem = Map<String, dynamic>.from(item);
+      newItem['quantity'] = newItem['quantity'] ?? 1; // ถ้ายังไม่มีให้เป็น 1
+      return newItem;
+    }).toList();
+  }
+
+  // ฟังก์ชันคำนวณราคารวมทั้งหมด
+  double _calculateTotal() {
+    double total = 0;
+    for (var item in _filteredMenuItems) {
+      // สมมติว่าราคาจานละ 35 บาทตามโค้ดเดิมของคุณ
+      total += (item['quantity'] as int) * 35; 
+    }
+    return total;
   }
 
   @override
@@ -27,7 +39,7 @@ class _PaymentPageState extends State<PaymentPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.pink[400],
-        title: const Text('รายหารอาหารที่สั่ง'),
+        title: const Text('รายการอาหารที่สั่ง'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -38,108 +50,127 @@ class _PaymentPageState extends State<PaymentPage> {
                 itemCount: _filteredMenuItems.length,
                 itemBuilder: (context, index) {
                   final menuItem = _filteredMenuItems[index];
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
+                  return Card( // เพิ่ม Card เพื่อความสวยงามและแบ่งสัดส่วน
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${index + 1} .'),
-                          Text(menuItem['strMeal'].toString(),
-                              overflow: TextOverflow.ellipsis),
-                        ],
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            if (_filteredMenuItems.isNotEmpty) {
-                              Get.defaultDialog(
-                                title: 'การแจ้งเตือน',
-                                middleText: 'คุณต้องการลบรายการนี้หรือไม่?',
-                                backgroundColor: Colors.white,
-                                titleStyle: const TextStyle(color: Colors.red),
-                                middleTextStyle:
-                                    const TextStyle(color: Colors.grey),
-                                radius: 6,
-                                textConfirm: 'ยืนยัน',
-                                textCancel: 'ยกเลิก',
-                                cancelTextColor: Colors.grey,
-                                confirmTextColor: Colors.white,
-                                buttonColor: Colors.red,
-                                onConfirm: () {
-                                  Get.back();
+                          // ส่วนชื่ออาหาร
+                          Expanded(
+                            child: Text(
+                              '${index + 1}. ${menuItem['strMeal']}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          
+                          // --- ส่วนเพิ่ม/ลด จำนวน ---
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove_circle_outline, color: Colors.pink),
+                                onPressed: () {
                                   setState(() {
-                                    _filteredMenuItems.removeWhere((element) =>
-                                        element['idMeal'] ==
-                                        menuItem['idMeal']);
+                                    if (menuItem['quantity'] > 1) {
+                                      menuItem['quantity']--;
+                                    }
                                   });
                                 },
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.delete_forever))
-                    ],
+                              ),
+                              Text(
+                                '${menuItem['quantity']}',
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add_circle_outline, color: Colors.green),
+                                onPressed: () {
+                                  setState(() {
+                                    menuItem['quantity']++;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+
+                          // ปุ่มลบรายการ
+                          IconButton(
+                            onPressed: () {
+                              _showDeleteDialog(index);
+                            },
+                            icon: const Icon(Icons.delete_forever, color: Colors.red),
+                          )
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),
             ),
+            
+            // ส่วนสรุปค่าใช้จ่าย
             Padding(
-              padding: const EdgeInsets.only(bottom: 29),
+              padding: const EdgeInsets.only(bottom: 20, top: 10),
               child: Text(
-                  'สรุปค่าใช้จ่าย ทั้งหมด ${_filteredMenuItems.length * 35} บาท',
-                  overflow: TextOverflow.ellipsis),
+                'สรุปค่าใช้จ่าย ทั้งหมด ${_calculateTotal().toInt()} บาท',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
+
+            // ปุ่มชำระเงิน
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('เงินสด', textAlign: TextAlign.center),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  child: ElevatedButton(
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.pink[400])),
-                      onPressed: () {
-                        //ถ้ามีข้อมูลแล้วให้สามารถสั่งได้
-                        if (_filteredMenuItems.isNotEmpty) {
-                          Get.defaultDialog(
-                            title: 'การแจ้งเตือน',
-                            middleText: 'คุณต้องการชำระเงินหรือไม่?',
-                            backgroundColor: Colors.white,
-                            titleStyle: const TextStyle(color: Colors.red),
-                            middleTextStyle:
-                                const TextStyle(color: Colors.grey),
-                            radius: 6,
-                            textConfirm: 'ยืนยัน',
-                            textCancel: 'ยกเลิก',
-                            cancelTextColor: Colors.grey,
-                            confirmTextColor: Colors.white,
-                            buttonColor: Colors.red,
-                            onConfirm: () {
-                              Get.offAllNamed("/CheckOutPage");
-                            },
-                          );
-                        } else {
-                          //ถ้าไม่มีข้อมูลให้แจ้งเตือน
-                          Get.snackbar(
-                            'การแจ้งเตือน',
-                            'กรุณาเลือกรายการก่อน!',
-                            backgroundColor: Colors.pink[200],
-                            colorText: Colors.white,
-                            icon: const Icon(Icons.warning_rounded,
-                                color: Colors.white),
-                            snackPosition: SnackPosition.TOP,
-                          );
-                        }
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text('Next To logout'),
-                      )),
-                )
+                const Text('เงินสด'),
+                const SizedBox(width: 15),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pink[400],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
+                  onPressed: () => _handlePayment(),
+                  child: const Text('Next To logout', style: TextStyle(color: Colors.white)),
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  // แยกฟังก์ชัน Dialog ออกมาเพื่อให้โค้ดดูสะอาดขึ้น
+  void _showDeleteDialog(int index) {
+    Get.defaultDialog(
+      title: 'การแจ้งเตือน',
+      middleText: 'คุณต้องการลบรายการนี้หรือไม่?',
+      textConfirm: 'ยืนยัน',
+      textCancel: 'ยกเลิก',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      onConfirm: () {
+        setState(() {
+          _filteredMenuItems.removeAt(index);
+        });
+        Get.back();
+      },
+    );
+  }
+
+  void _handlePayment() {
+    if (_filteredMenuItems.isNotEmpty) {
+      Get.defaultDialog(
+        title: 'การแจ้งเตือน',
+        middleText: 'คุณต้องการชำระเงินหรือไม่?',
+        textConfirm: 'ยืนยัน',
+        textCancel: 'ยกเลิก',
+        confirmTextColor: Colors.white,
+        buttonColor: Colors.red,
+        onConfirm: () => Get.offAllNamed("/CheckOutPage"),
+      );
+    } else {
+      Get.snackbar('การแจ้งเตือน', 'กรุณาเลือกรายการก่อน!',
+          backgroundColor: Colors.pink[200], colorText: Colors.white);
+    }
   }
 }
