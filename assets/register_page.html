@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f0f0f0; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #ec4899; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; }
+        h2 { text-align: center; color: #333; }
+    </style>
+</head>
+<body>
+    <h2>ลงทะเบียนสมาชิก</h2>
+    <input type="text" id="username" placeholder="ชื่อผู้ใช้">
+    <input type="email" id="email" placeholder="อีเมล">
+    <input type="password" id="password" placeholder="รหัสผ่าน">
+    <input type="text" id="phone" placeholder="เบอร์โทรศัพท์">
+    <input type="text" id="address" placeholder="ที่อยู่">
+    <button onclick="confirmAndRegister()">ยืนยันการลงทะเบียน</button>
+
+    <script>
+        const SUPABASE_URL = 'https://igipojhbetjhgufxbvgs.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_tEmbm32nMcjG0gVPFQtT8A_Cz64sK8T'; 
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function confirmAndRegister() {
+            const user = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value.trim();
+
+            if (!user || !email || !pass) { alert("กรุณากรอกข้อมูลให้ครบถ้วน"); return; }
+            if (!confirm("ยืนยันการสมัครสมาชิก?")) return;
+
+            try {
+                // 1. สมัครสมาชิกในระบบ Auth
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                    email: email, password: pass,
+                });
+
+                if (authError) throw authError;
+
+                // 2. บันทึกข้อมูลลงตาราง profiles
+                if (authData.user) {
+                    const { error: dbError } = await supabaseClient
+                        .from('profiles')
+                        .insert([{ 
+                            id: authData.user.id, username: user, 
+                            phone: phone, address: address, email: email
+                        }]);
+                    if (dbError) throw dbError;
+                }
+
+                alert("ลงทะเบียนสำเร็จ!");
+                if (window.NavigationChannel) window.NavigationChannel.postMessage('back_to_login');
+            } catch (error) {
+                alert("เกิดข้อผิดพลาด: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

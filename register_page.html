@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>หน้าลงทะเบียน</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: hsl(202, 100%, 59%); 
+        }
+
+        .reg-form { 
+            border: none; 
+            padding: 30px; 
+            border-radius: 15px; 
+            width: 350px; 
+            background-color: #ffffff; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+        }
+
+        h2 { text-align: center; color: #333; margin-top: 0; margin-bottom: 20px; }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        
+        input[type="text"], 
+        input[type="email"], 
+        input[type="password"], 
+        input[type="tel"],
+        textarea { 
+            width: 100%; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #ff69b4;
+        }
+
+        /* ส่วนข้อแนะนำรหัสผ่าน */
+        .password-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: #ff69b4; 
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover { 
+            background-color: #ff1493; 
+        }
+
+        textarea { resize: none; }
+    </style>
+</head>
+<body>
+
+<div class="reg-form">
+    <h2>สมัครสมาชิก</h2>
+    <form id="registerForm">
+        <div class="input-group">
+            <label for="username">ชื่อผู้ใช้งาน:</label>
+            <input type="text" id="username" name="username" placeholder="กรอกชื่อผู้ใช้" required>
+        </div>
+
+        <div class="input-group">
+            <label for="email">อีเมล:</label>
+            <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+        </div>
+
+        <div class="input-group">
+            <label for="password">รหัสผ่าน:</label>
+            <input type="password" id="password" name="password" placeholder="กำหนดรหัสผ่าน" required>
+            <div class="password-hint">
+                * อย่างน้อย 9 ตัวอักษร (A-Z, a-z, 0-9)
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="address">ที่อยู่:</label>
+            <textarea id="address" name="address" rows="3" placeholder="บ้านเลขที่, ถนน, ตำบล..."></textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="phone">เบอร์โทรศัพท์ (9 หลัก):</label>
+            <input type="tel" id="phone" name="phone" 
+                   inputmode="numeric"
+                   maxlength="9" 
+                   placeholder="ระบุตัวเลข 9 หลัก"
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '');" 
+                   required>
+        </div>
+
+        <button type="button" onclick="confirmAndRegister()">ลงทะเบียน</button>
+    </form>
+</div>
+
+<script>
+    function confirmAndRegister() {
+        const user = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const pass = document.getElementById('password').value;
+        const phone = document.getElementById('phone').value;
+
+        // 1. ตรวจสอบชื่อผู้ใช้
+        if (user === "") {
+            alert("กรุณากรอกชื่อผู้ใช้งานก่อนครับ");
+            return;
+        }
+
+        // 2. ตรวจสอบรูปแบบอีเมล
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            alert("รูปแบบอีเมลไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
+            return;
+        }
+
+        // 3. ตรวจสอบความปลอดภัยรหัสผ่าน (มาตรฐาน 9 ตัวอักษร + ตัวใหญ่ + ตัวเล็ก + ตัวเลข)
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{9,}$/;
+        if (!passwordPattern.test(pass)) {
+            alert("รหัสผ่านไม่ตรงตามมาตรฐานความปลอดภัย:\n" +
+                  "- ต้องมีความยาวอย่างน้อย 9 ตัวอักษร\n" +
+                  "- ต้องมีตัวพิมพ์ใหญ่ (A-Z) อย่างน้อย 1 ตัว\n" +
+                  "- ต้องมีตัวพิมพ์เล็ก (a-z) อย่างน้อย 1 ตัว\n" +
+                  "- ต้องมีตัวเลข (0-9) อย่างน้อย 1 ตัว");
+            return;
+        }
+
+        // 4. ตรวจสอบเบอร์โทรศัพท์
+        if (phone.length !== 9) {
+            alert("กรุณากรอกเบอร์โทรศัพท์ให้ครบ 9 หลักครับ (ตอนนี้มี " + phone.length + " หลัก)");
+            return;
+        }
+
+        // ยืนยันการลงทะเบียน
+        const isConfirmed = confirm("คุณต้องการยืนยันการลงทะเบียนใช่หรือไม่?");
+
+        if (isConfirmed) {
+            alert("ลงทะเบียนสำเร็จ! กำลังกลับไปหน้า Login...");
+            
+            // ส่งคำสั่งกลับไปยัง Flutter NavigationChannel
+            if (window.NavigationChannel) {
+                window.NavigationChannel.postMessage('back_to_login');
+            } else {
+                // สำหรับทดสอบบน Browser ทั่วไป
+                const baseUrl = window.location.origin;
+                window.location.href = baseUrl + "/#/LoginPage";
+            }
+        } else {
+            console.log("ยกเลิกการลงทะเบียน");
+        }
+    }
+</script>
+
+</body>
+</html>
