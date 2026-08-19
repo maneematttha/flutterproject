@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="SkyFLASH - สั่งอาหารจัดส่งด้วยโดรน รวดเร็วทันใจภายใน 15 นาที">
+  <title>SkyFLASH — Drone Food Delivery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+/* ===========================================================
+   DESIGN TOKENS — จากสีใน Flutter (login.dart / home.dart)
+   =========================================================== */
+:root {
+  --pink: #EC407A;
+  --pink-dark: #D81B60;
+  --pink-light: #FCE4EC;
+  --pink-bg: rgba(236,64,122,0.08);
+  --blue: #64B5F6;
+  --blue-light: #90CAF9;
+  --blue-pale: #E3F2FD;
+  --bg: #F5F5F5;
+  --white: #FFFFFF;
+  --text: #212121;
+  --text2: #424242;
+  --text3: #757575;
+  --text4: #BDBDBD;
+  --border: #E0E0E0;
+  --success: #4CAF50;
+  --success-bg: rgba(76,175,80,0.1);
+  --danger: #EF5350;
+  --warn: #FF9800;
+  --r: 14px;
+  --r-sm: 8px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-top: 0 -2px 8px rgba(0,0,0,0.04);
+}
+
+/* ===========================================================
+   RESET
+   =========================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  font-family: 'Kanit', sans-serif;
+  background: #ECEFF1;
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  line-height: 1.5;
+}
+input, button, select, textarea { font-family: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ===========================================================
+   APP SHELL — responsive
+   =========================================================== */
+.app {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+}
+/* On wider screens, give it a phone-like shadow */
+@media (min-width: 481px) {
+  .app { box-shadow: var(--shadow-md); }
+}
+/* On real mobile, let it be full width */
+@media (max-width: 480px) {
+  .app { max-width: 100%; }
+}
+
+/* ===========================================================
+   SCREEN MANAGEMENT
+   =========================================================== */
+.scr { display: none; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+.scr.on { display: flex; animation: fadeSlide 0.3s ease-out; }
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===========================================================
+   HEADER
+   =========================================================== */
+.hdr {
+  background: var(--pink);
+  color: var(--white);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.hdr__title {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 500;
+}
+.hdr__title--c { text-align: center; }
+.hdr__sp { width: 28px; }
+.ic-btn {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* ===========================================================
+   BUTTONS
+   =========================================================== */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--r);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.98); opacity: 0.9; }
+.btn:disabled { opacity: 0.45; pointer-events: none; }
+.btn--pink { background: var(--pink); color: var(--white); }
+.btn--pink:hover { background: var(--pink-dark); }
+.btn--login {
+  background: var(--pink);
+  color: var(--white);
+  border-radius: 15px;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 15px;
+}
+.btn--outline { background: transparent; border: 1.5px solid var(--pink); color: var(--pink); }
+.btn--google {
+  background: #263238;
+  color: var(--white);
+  border-radius: var(--r);
+  padding: 12px 16px;
+  justify-content: flex-start;
+  gap: 14px;
+}
+.btn--success { background: var(--success); color: var(--white); }
+.g-icon {
+  background: var(--white);
+  border-radius: 50%;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.g-icon img { width: 18px; height: 18px; }
+
+/* ===========================================================
+   INPUTS
+   =========================================================== */
+.cnt { padding: 20px; flex: 1; overflow-y: auto; }
+.fg { margin-bottom: 14px; }
+.fg--ic { position: relative; }
+.fg--ic .f-ic {
+  position: absolute;
+  left: 16px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
+}
+.fg--ic .inp { padding-left: 46px; }
+.inp {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 15px;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+.inp::placeholder { color: var(--text4); }
+.inp:focus { box-shadow: 0 0 0 2px var(--pink); }
+
+/* ===========================================================
+   1 · LOGIN SCREEN — พื้นหลังขาว
+   =========================================================== */
+.login-scr {
+  background: var(--white);
+}
+.login__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 24px 16px;
+  flex: 1;
+}
+.login__logo {
+  width: 220px;
+  height: auto;
+  max-height: 160px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+.login__brand {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--pink);
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+.login__form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.login__form .f-ic { color: var(--text3); }
+.login__form .inp {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.login__form .inp::placeholder { color: var(--text4); }
+.login__form .inp:focus { border-color: var(--pink); box-shadow: 0 0 0 3px var(--pink-bg); }
+
+.login__forgot {
+  color: var(--pink);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: right;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: -2px;
+}
+.login__forgot:hover { text-decoration: underline; }
+.login__reg {
+  color: var(--text2);
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 12px;
+  background: none;
+  border: none;
+}
+.login__reg strong { color: var(--pink); font-weight: 600; text-decoration: underline; }
+.login__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  width: 100%;
+}
+.login__divider::before,
+.login__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.login__divider span {
+  font-size: 13px;
+  color: var(--text4);
+}
+
+/* Showcase (bottom section) */
+.showcase {
+  background: var(--bg);
+  color: var(--text);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 22px 20px 28px;
+  margin-top: auto;
+}
+.showcase__section { margin-bottom: 18px; }
+.showcase__section:last-child { margin-bottom: 0; }
+.showcase__h {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+/* Carousel wrapper */
+.carousel {
+  position: relative;
+  overflow: hidden;
+}
+.carousel__track {
+  display: flex;
+  gap: 10px;
+  transition: transform 0.4s ease;
+}
+.carousel__nav {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.carousel__dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--text4);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.carousel__dot.on {
+  background: var(--pink);
+  width: 18px;
+  border-radius: 4px;
+}
+.mcard {
+  min-width: 130px;
+  max-width: 130px;
+  border-radius: var(--r);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+.mcard img { width: 100%; height: 85px; object-fit: cover; }
+.mcard__lb {
+  padding: 7px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text2);
+}
+
+/* ===========================================================
+   2 · REGISTER
+   =========================================================== */
+.reg__title {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+}
+/* Register uses normal white inputs with border */
+.reg-form .inp {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+.reg-form .inp:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px var(--pink-bg);
+}
+
+/* ===========================================================
+   3 · MENU
+   =========================================================== */
+.cats {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 16px;
+  background: var(--pink);
+  scrollbar-width: none;
+}
+.cats::-webkit-scrollbar { display: none; }
+.chip {
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  transition: 0.15s;
+  flex-shrink: 0;
+}
+.chip--off { background: rgba(255,255,255,0.2); color: var(--white); }
+.chip--on { background: var(--white); color: var(--pink); font-weight: 600; }
+
+.sbar {
+  padding: 12px 16px;
+  background: var(--white);
+}
+.sbar__w { position: relative; }
+.sbar__w i {
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 14px;
+}
+.sbar__inp {
+  width: 100%;
+  padding: 11px 16px 11px 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 14px;
+  outline: none;
+  background: var(--bg);
+}
+.sbar__inp:focus { border-color: var(--pink); }
+.sbar__inp::placeholder { color: var(--text4); }
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px 14px 140px;
+}
+@media (max-width: 340px) {
+  .food-grid { grid-template-columns: 1fr; }
+}
+
+.fcard {
+  background: var(--white);
+  border-radius: var(--r);
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+.fcard:active { box-shadow: var(--shadow-md); }
+.fcard.sel {
+  border-color: var(--pink);
+  border-width: 2.5px;
+  box-shadow: 0 4px 16px rgba(236,64,122,0.12);
+}
+.fcard__img-wrap { position: relative; }
+.fcard__img { width: 100%; height: 120px; object-fit: cover; }
+.fcard__chk {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--pink);
+  color: var(--white);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+.fcard.sel .fcard__chk { display: flex; }
+.fcard__body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.fcard__name {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.fcard__price {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--pink-light);
+  color: var(--pink-dark);
+  border-radius: var(--r-sm);
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: auto;
+  margin-bottom: 6px;
+  width: fit-content;
+}
+.fcard__add {
+  width: 100%;
+  padding: 7px;
+  border: 1.5px solid var(--pink);
+  background: transparent;
+  color: var(--pink);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.fcard__add:active { background: var(--pink); color: var(--white); }
+
+/* Sticky bottom bar */
+.stk-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--white);
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--shadow-top);
+  z-index: 20;
+}
+#s-menu .stk-bar {
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 480px) {
+  .stk-bar { max-width: 100%; }
+}
+
+/* ===========================================================
+   4 · CART
+   =========================================================== */
+.cart-box {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 0 14px;
+  border: 1px solid var(--border);
+}
+.cart-empty {
+  padding: 36px;
+  text-align: center;
+  color: var(--text3);
+}
+.cart-empty i { font-size: 32px; color: var(--border); margin-bottom: 8px; display: block; }
+.ci {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ci:last-child { border: none; }
+.ci__info { flex: 1; padding-right: 10px; }
+.ci__name { font-weight: 500; font-size: 14px; }
+.ci__price { color: var(--pink); font-size: 13px; margin-top: 2px; }
+.qty { display: flex; align-items: center; gap: 10px; }
+.qty__btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+}
+.qty__btn:active { border-color: var(--pink); color: var(--pink); }
+.qty__num { font-weight: 600; font-size: 15px; min-width: 18px; text-align: center; }
+.summary {
+  background: var(--white);
+  padding: 16px;
+  border-radius: var(--r);
+  margin-top: 14px;
+  border: 1px solid var(--border);
+}
+.s-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text3);
+}
+.s-row--total {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  border-top: 1px dashed var(--border);
+  padding-top: 10px;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* ===========================================================
+   5 · PAYMENT QR
+   =========================================================== */
+.qr-box {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px solid var(--border);
+  margin-top: 12px;
+}
+.qr-timer { font-size: 26px; font-weight: 700; color: var(--pink); margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+.qr-timer.exp { color: var(--danger); }
+.qr-frame {
+  width: 180px; height: 180px;
+  margin: 0 auto 12px;
+  padding: 8px;
+  border: 2px solid var(--pink-light);
+  border-radius: var(--r-sm);
+}
+.qr-frame img { width: 100%; height: 100%; }
+.qr-amount { font-size: 28px; font-weight: 700; margin: 8px 0 2px; }
+.qr-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 12px;
+}
+.qr-status--wait { background: var(--success-bg); color: var(--success); }
+.qr-status--ok { background: var(--success-bg); color: var(--success); }
+
+/* ===========================================================
+   6 · ORDER TRACKING
+   =========================================================== */
+.track-card {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 18px;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.track-card__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.track-badge {
+  background: var(--pink-light);
+  color: var(--pink);
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 600;
+}
+/* GPS Mock Map */
+.gps-map {
+  width: 100%;
+  height: 150px;
+  border-radius: var(--r);
+  background: linear-gradient(135deg, var(--blue-pale), var(--blue-light));
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 14px;
+  border: 1px solid var(--blue-light);
+}
+.gps-map__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(100,181,246,0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100,181,246,0.2) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.gps-map__drone {
+  position: absolute;
+  font-size: 26px;
+  transition: all 2s ease-in-out;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.gps-map__pin-a { position: absolute; bottom: 16px; left: 16px; font-size: 16px; color: var(--pink); }
+.gps-map__pin-b { position: absolute; top: 16px; right: 16px; font-size: 16px; color: var(--success); }
+.gps-map__lbl {
+  position: absolute;
+  bottom: 4px; right: 6px;
+  font-size: 9px;
+  color: #1565C0;
+  background: rgba(255,255,255,0.8);
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+}
+/* Timeline */
+.tl-step { display: flex; gap: 12px; }
+.tl-step__rail { display: flex; flex-direction: column; align-items: center; width: 30px; flex-shrink: 0; }
+.tl-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  background: var(--white);
+  transition: 0.3s;
+}
+.tl-dot--done { background: var(--pink); border-color: var(--pink); color: var(--white); }
+.tl-dot--now { background: var(--pink-light); border-color: var(--pink); color: var(--pink); animation: pulse 1.5s ease infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(236,64,122,0.25); } 50% { box-shadow: 0 0 0 7px rgba(236,64,122,0); } }
+.tl-line { flex: 1; width: 2px; background: var(--border); }
+.tl-line--done { background: var(--pink); }
+.tl-step__text { padding-bottom: 20px; }
+.tl-step__title { font-size: 14px; font-weight: 600; color: var(--text4); }
+.tl-step__title.on { color: var(--text); }
+.tl-step__sub { font-size: 12px; color: var(--text4); margin-top: 2px; }
+.tl-step__sub.on { color: var(--text3); }
+/* Track summary */
+.track-sum__row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 13px; color: var(--text2); }
+.track-sum__div { border-top: 1px dashed var(--border); margin: 6px 0; }
+.track-sum__total { display: flex; justify-content: space-between; font-size: 15px; font-weight: 600; }
+
+/* ===========================================================
+   MODALS
+   =========================================================== */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal.on { display: flex; }
+.modal__box {
+  background: var(--white);
+  width: 100%;
+  max-width: 320px;
+  border-radius: var(--r-lg);
+  padding: 24px 20px;
+  text-align: center;
+  animation: modalIn 0.25s ease;
+}
+@keyframes modalIn { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal__ic { width: 44px; height: 44px; margin: 0 auto 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.modal__ic--err { background: rgba(239,83,80,0.1); color: var(--danger); }
+.modal__ic--ok { background: var(--success-bg); color: var(--success); }
+.modal__ic--info { background: var(--pink-light); color: var(--pink); }
+.modal__title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.modal__msg { font-size: 14px; color: var(--text3); margin-bottom: 14px; line-height: 1.5; }
+.modal__btns { display: flex; gap: 10px; margin-top: 12px; }
+.modal__btns .btn { flex: 1; padding: 10px; font-size: 14px; }
+
+/* ===========================================================
+   TOAST
+   =========================================================== */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--text);
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  z-index: 200;
+  opacity: 0;
+  transition: 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90%;
+}
+.toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===========================================================
+   BOTTOM NAVIGATION
+   =========================================================== */
+.bnav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--white);
+  box-shadow: var(--shadow-top);
+  display: flex;
+  justify-content: space-around;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 50;
+  border-top: 1px solid var(--border);
+  display: none; /* hidden by default, shown by JS */
+}
+@media (max-width: 480px) { .bnav { max-width: 100%; } }
+.bnav.on { display: flex; }
+.bnav__it {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  color: var(--text4);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: 0.2s;
+}
+.bnav__it i { font-size: 20px; margin-bottom: 4px; transition: 0.2s; }
+.bnav__it.on { color: var(--pink); }
+.bnav__it.on i { transform: translateY(-2px); }
+
+/* ===========================================================
+   TABS & ORDERS
+   =========================================================== */
+.tabs { display: flex; background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+.tabs__btn {
+  flex: 1; padding: 14px 0; background: none; border: none; font-size: 14px; font-weight: 600; color: var(--text3); cursor: pointer; position: relative;
+}
+.tabs__btn.on { color: var(--pink); }
+.tabs__btn.on::after { content: ''; position: absolute; bottom: 0; left: 15%; width: 70%; height: 3px; background: var(--pink); border-radius: 3px 3px 0 0; }
+.tab-cnt { display: none; padding: 16px; padding-bottom: 90px; }
+.tab-cnt.on { display: block; animation: fadeSlide 0.3s; }
+
+.ord-card { background: var(--white); border-radius: var(--r); padding: 16px; border: 1px solid var(--border); margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
+.ord-card:active { transform: scale(0.98); }
+.ord-card__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
+.ord-card__id { font-weight: 600; font-size: 14px; }
+.ord-card__date { font-size: 12px; color: var(--text4); }
+.ord-card__body { display: flex; align-items: center; gap: 12px; }
+.ord-card__ic { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.ord-card__ic--act { background: var(--pink-light); color: var(--pink); }
+.ord-card__ic--done { background: var(--success-bg); color: var(--success); }
+.ord-card__det { flex: 1; }
+.ord-card__st { font-size: 14px; font-weight: 600; }
+.ord-card__st--act { color: var(--pink); }
+.ord-card__st--done { color: var(--success); }
+.ord-card__sum { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.ord-card__price { font-weight: 700; font-size: 15px; }
+
+/* ===========================================================
+   PROFILE
+   =========================================================== */
+.pro-card { background: var(--white); border-radius: var(--r); padding: 20px; border: 1px solid var(--border); margin-bottom: 16px; display: flex; align-items: center; gap: 16px; }
+.pro-card__av { width: 60px; height: 60px; border-radius: 50%; background: var(--pink-light); color: var(--pink); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; }
+.pro-card__info { flex: 1; }
+.pro-card__n { font-size: 18px; font-weight: 600; margin-bottom: 2px; }
+.pro-card__e { font-size: 13px; color: var(--text3); }
+
+.menu-list { background: var(--white); border-radius: var(--r); border: 1px solid var(--border); overflow: hidden; }
+.menu-list__it { display: flex; align-items: center; gap: 14px; padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; background: none; width: 100%; text-align: left; font-size: 15px; }
+.menu-list__it:last-child { border: none; }
+.menu-list__it:active { background: var(--bg); }
+.menu-list__it i:first-child { width: 24px; text-align: center; color: var(--pink); font-size: 18px; }
+.menu-list__it i:last-child { margin-left: auto; color: var(--text4); font-size: 14px; }
+
+/* ===========================================================
+   SPACING
+   =========================================================== */
+.mt8 { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mt20 { margin-top: 20px; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+<!-- ===== 1 · LOGIN ===== -->
+<div id="s-login" class="scr login-scr on">
+  <div class="login__body">
+    <img src="logo_transparent.png" alt="SkyFLASH" class="login__logo" onerror="this.src='https://ui-avatars.com/api/?name=Sky&background=EC407A&color=fff&size=180&rounded=true'">
+    <div class="login__brand">SkyFLASH</div>
+
+    <form class="login__form" onsubmit="doLogin(event)">
+      <div class="fg--ic">
+        <i class="fa-solid fa-envelope f-ic"></i>
+        <input class="inp" id="lEmail" type="email" placeholder="อีเมลผู้ใช้" required autocomplete="email">
+      </div>
+      <div class="fg--ic">
+        <i class="fa-solid fa-lock f-ic"></i>
+        <input class="inp" id="lPass" type="password" placeholder="รหัสผ่าน" required autocomplete="current-password">
+      </div>
+      <button type="button" class="login__forgot" onclick="openM('m-forgot')">ลืมรหัสผ่าน?</button>
+      <button type="submit" class="btn btn--login mt8">เข้าสู่ระบบ</button>
+    </form>
+
+    <button class="login__reg" onclick="go('register')">ยังไม่มีบัญชี? ลงทะเบียนที่นี่</button>
+
+    <div class="login__divider"><span>หรือ</span></div>
+
+    <div style="width:100%">
+      <button class="btn btn--google" onclick="doGoogleLogin()">
+        <div class="g-icon"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="G"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-start">
+          <span style="font-size:14px;font-weight:500">ดำเนินการต่อด้วย Google</span>
+          <span style="font-size:11px;font-weight:300;opacity:.7">แนะนำสำหรับผู้ใช้ส่วนใหญ่</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div class="showcase">
+    <div class="showcase__section">
+      <div class="showcase__h"><i class="fa-solid fa-store" style="color:var(--pink)"></i> ร้านอาหารแนะนำ</div>
+      <div class="carousel" id="car-rest">
+        <div class="carousel__track" id="sh-rest"></div>
+        <div class="carousel__nav" id="nav-rest"></div>
+      </div>
+    </div>
+    <div class="showcase__section">
+      <div class="showcase__h"><i class="fa-solid fa-fire" style="color:var(--warn)"></i> เมนูยอดฮิต</div>
+      <div class="carousel" id="car-menu">
+        <div class="carousel__track" id="sh-menu"></div>
+        <div class="carousel__nav" id="nav-menu"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2 · REGISTER ===== -->
+<div id="s-register" class="scr">
+  <div class="hdr">
+    <button class="ic-btn" onclick="go('login')"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="hdr__title">ลงทะเบียน</div>
+  </div>
+  <div class="cnt">
+    <div class="reg__title">ลงทะเบียนสมาชิก</div>
+    <form class="reg-form" onsubmit="doRegister(event)">
+      <div class="fg"><input class="inp" id="rUser" placeholder="ชื่อผู้ใช้" required></div>
+      <div class="fg"><input class="inp" id="rEmail" type="email" placeholder="อีเมล" required></div>
+      <div class="fg"><input class="inp" id="rPass" type="password" placeholder="รหัสผ่าน (อย่างน้อย 6 ตัว)" required minlength="6"></div>
+      <div class="fg"><input class="inp" id="rPhone" type="tel" placeholder="เบอร์โทรศัพท์"></div>
+      <div class="fg"><input class="inp" id="rAddr" placeholder="ที่อยู่"></div>
+      <button type="submit" class="btn btn--pink mt20">ยืนยันการลงทะเบียน</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== 3 · MENU ===== -->
+<div id="s-menu" class="scr">
+  <div class="hdr">
+    <button class="ic-btn" onclick="doLogout()" title="ออกจากระบบ"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+    <div class="hdr__title hdr__title--c"><i class="fa-solid fa-rocket" style="font-size:13px"></i> SkyFLASH เมนูอาหาร</div>
+    <div class="hdr__sp"></div>
+  </div>
+  <div class="cats" id="catBar"></div>
+  <div class="sbar">
+    <div class="sbar__w">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input class="sbar__inp" id="searchInp" placeholder="ค้นหาเมนูอาหาร..." oninput="filterM()">
+    </div>
+  </div>
+  <div class="food-grid" id="foodGrid"></div>
+  <div class="stk-bar" style="display:none" id="stkBar">
+    <button class="btn btn--pink" onclick="go('cart')"><i class="fa-solid fa-shopping-bag"></i> ชำระเงิน (<span id="stkCnt">0</span> รายการ)</button>
+  </div>
+</div>
+
+<!-- ===== 4 · CART ===== -->
+<div id="s-cart" class="scr">
+  <div class="hdr">
+    <button class="ic-btn" onclick="go('menu')"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="hdr__title">ตะกร้าสินค้า</div>
+  </div>
+  <div class="cnt" style="padding-bottom:100px">
+    <div class="cart-box" id="cartBox"></div>
+
+    <div style="font-size:15px; font-weight:600; margin-top:20px; margin-bottom:8px">จัดส่งด้วยโดรนไปยัง:</div>
+    <div class="pro-card" style="padding:12px; margin-bottom:0; cursor:pointer" onclick="go('profile')">
+      <div class="pro-card__av" style="width:40px; height:40px; font-size:16px"><i class="fa-solid fa-location-dot"></i></div>
+      <div class="pro-card__info">
+        <div class="pro-card__n" style="font-size:14px">หอพัก A, ประตู 2</div>
+        <div class="pro-card__e" style="font-size:12px">ระยะทาง 2.5 กม. (บิน 5 นาที)</div>
+      </div>
+      <i class="fa-solid fa-chevron-right" style="color:var(--text4); font-size:14px"></i>
+    </div>
+
+    <div class="summary">
+      <div class="s-row"><span>รวมค่าอาหาร</span><span id="sSub">฿0</span></div>
+      <div class="s-row"><span>ค่าจัดส่ง (โดรน SkyFLASH)</span><span style="color:var(--pink)">฿20</span></div>
+      <div class="s-row s-row--total"><span>ยอดสุทธิ</span><span id="sTotal" style="color:var(--pink)">฿20</span></div>
+    </div>
+  </div>
+  <div class="stk-bar">
+    <button class="btn btn--pink" id="btnPay" onclick="go('payment')"><i class="fa-solid fa-credit-card"></i> ดำเนินการชำระเงิน</button>
+  </div>
+</div>
+
+<!-- ===== 5 · PAYMENT QR ===== -->
+<div id="s-payment" class="scr">
+  <div class="hdr">
+    <button class="ic-btn" onclick="go('cart')"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="hdr__title">ชำระเงินผ่าน QR Code</div>
+  </div>
+  <div class="cnt">
+    <div class="qr-box">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:4px">กรุณาสแกนเพื่อชำระเงินภายใน</div>
+      <div class="qr-timer" id="qrTm">05:00</div>
+      <div class="qr-frame"><img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PromptPay-SkyFLASH" alt="QR"></div>
+      <div class="qr-amount" id="qrAmt">฿0.00</div>
+      <div style="font-size:13px;color:var(--text3)">โอนเข้าบัญชี: SkyFLASH Delivery</div>
+      <div class="qr-status qr-status--wait" id="qrSt"><i class="fa-solid fa-spinner fa-spin"></i><span>รอการโอนเงิน...</span></div>
+    </div>
+    <button class="btn btn--success mt20" onclick="payOk()"><i class="fa-solid fa-check-circle"></i> จำลองการชำระเงินสำเร็จ (Demo)</button>
+  </div>
+</div>
+
+<!-- ===== 6 · ORDER TRACKING ===== -->
+<div id="s-tracking" class="scr">
+  <div class="hdr">
+    <button class="ic-btn" onclick="go('menu')"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="hdr__title">ติดตามออเดอร์</div>
+  </div>
+  <div class="cnt">
+    <div class="track-card">
+      <div class="track-card__head">
+        <i class="fa-solid fa-check-circle" style="color:var(--success);font-size:20px"></i>
+        <span style="font-weight:600;font-size:15px">ส่งคำสั่งซื้อสำเร็จแล้ว!</span>
+        <span style="font-size:12px;color:var(--text3);margin-left:auto" id="tOrdId">#SKF-0001</span>
+      </div>
+      <div style="font-size:13px;color:var(--text3);text-align:center">ระบบได้ส่งข้อมูลไปยังร้านค้าและเตรียมส่งโดรน SkyFLASH</div>
+      <div class="track-badge" style="margin-top:10px;text-align:center" id="tPayInfo">PromptPay QR (ยืนยันแล้ว)</div>
+    </div>
+
+    <div class="gps-map">
+      <div class="gps-map__grid"></div>
+      <div class="gps-map__pin-a"><i class="fa-solid fa-store"></i></div>
+      <div class="gps-map__pin-b"><i class="fa-solid fa-location-dot"></i></div>
+      <div class="gps-map__drone" id="droneEl">🚁</div>
+      <div class="gps-map__lbl">SkyFLASH GPS Tracking</div>
+    </div>
+
+    <div class="track-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <i class="fa-solid fa-satellite-dish" style="color:var(--pink)"></i>
+        <span style="font-size:15px;font-weight:600">สถานะการจัดส่ง (Real-time)</span>
+      </div>
+      <div id="timeline"></div>
+    </div>
+
+    <div class="track-card" id="trackItems"></div>
+
+    <button class="btn btn--pink mt8" onclick="cart={};updBar();go('menu')"><i class="fa-solid fa-utensils"></i> สั่งอาหารเพิ่ม / กลับหน้าหลัก</button>
+  </div>
+</div>
+
+<!-- ===== 7 · MY ORDERS ===== -->
+<div id="s-orders" class="scr">
+  <div class="hdr">
+    <div class="hdr__title hdr__title--c">ออเดอร์ของฉัน</div>
+  </div>
+  <div class="tabs">
+    <button class="tabs__btn on" onclick="switchOrderTab('active')" id="tab-active">กำลังดำเนินการ</button>
+    <button class="tabs__btn" onclick="switchOrderTab('history')" id="tab-history">ประวัติ</button>
+  </div>
+  <div class="cnt" style="padding:0; padding-bottom:70px">
+    <div class="tab-cnt on" id="ord-active">
+      <div style="text-align:center; padding:40px 20px; color:var(--text3)" id="no-active-ord">
+        <i class="fa-solid fa-box-open" style="font-size:32px; color:var(--border); margin-bottom:12px; display:block"></i>
+        ไม่มีออเดอร์ที่กำลังดำเนินการ
+      </div>
+      <div id="active-list"></div>
+    </div>
+    <div class="tab-cnt" id="ord-history">
+      <div class="ord-card">
+        <div class="ord-card__head">
+          <span class="ord-card__id">#SKF-8809</span>
+          <span class="ord-card__date">18 ส.ค. 69, 12:30</span>
+        </div>
+        <div class="ord-card__body">
+          <div class="ord-card__ic ord-card__ic--done"><i class="fa-solid fa-check"></i></div>
+          <div class="ord-card__det">
+            <div class="ord-card__st ord-card__st--done">จัดส่งสำเร็จ</div>
+            <div class="ord-card__sum">ข้าวกะเพราหมูกรอบ... (3 รายการ)</div>
+          </div>
+          <div class="ord-card__price">฿215</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 8 · PROFILE ===== -->
+<div id="s-profile" class="scr">
+  <div class="hdr">
+    <div class="hdr__title hdr__title--c">บัญชีผู้ใช้</div>
+  </div>
+  <div class="cnt" style="padding-bottom:80px">
+    <div class="pro-card">
+      <div class="pro-card__av"><i class="fa-solid fa-user"></i></div>
+      <div class="pro-card__info">
+        <div class="pro-card__n" id="proName">ผู้ใช้งาน Demo</div>
+        <div class="pro-card__e" id="proEmail">demo@skyflash.com</div>
+      </div>
+    </div>
+
+    <div style="font-size:15px; font-weight:600; margin-bottom:10px">พิกัดจัดส่งโดรน (Drop-off Point)</div>
+    <div class="gps-map" style="height:120px; cursor:pointer" onclick="alert2('info','จำลองแผนที่','ในแอปจริงจะเปิด Google Maps ให้ปักหมุดจุดลงจอดโดรน')">
+      <div class="gps-map__grid"></div>
+      <div class="gps-map__pin-b" style="top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px"><i class="fa-solid fa-location-dot"></i></div>
+      <div class="gps-map__lbl" style="font-size:11px">หอพัก A, ประตู 2</div>
+    </div>
+
+    <div style="font-size:15px; font-weight:600; margin:top:20px; margin-bottom:10px">ตั้งค่าบัญชี</div>
+    <div class="menu-list">
+      <button class="menu-list__it"><i class="fa-solid fa-bell"></i> การแจ้งเตือน <i class="fa-solid fa-chevron-right"></i></button>
+      <button class="menu-list__it"><i class="fa-solid fa-credit-card"></i> ช่องทางชำระเงิน <i class="fa-solid fa-chevron-right"></i></button>
+      <button class="menu-list__it"><i class="fa-solid fa-headset"></i> ติดต่อศูนย์ช่วยเหลือ <i class="fa-solid fa-chevron-right"></i></button>
+      <button class="menu-list__it" onclick="doLogout()" style="color:var(--danger)"><i class="fa-solid fa-arrow-right-from-bracket" style="color:var(--danger)"></i> ออกจากระบบ <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAVIGATION ===== -->
+<nav class="bnav" id="bNav">
+  <button class="bnav__it on" onclick="go('menu')" id="nav-menu-btn"><i class="fa-solid fa-house"></i> หน้าแรก</button>
+  <button class="bnav__it" onclick="go('orders')" id="nav-orders-btn"><i class="fa-solid fa-receipt"></i> ออเดอร์</button>
+  <button class="bnav__it" onclick="go('profile')" id="nav-profile-btn"><i class="fa-solid fa-user"></i> บัญชี</button>
+</nav>
+
+<!-- ===== MODALS ===== -->
+<div class="modal" id="m-forgot">
+  <div class="modal__box">
+    <div class="modal__ic modal__ic--info"><i class="fa-solid fa-envelope"></i></div>
+    <div class="modal__title">ลืมรหัสผ่าน</div>
+    <div class="modal__msg">กรุณากรอกอีเมลของคุณเพื่อรับลิงก์รีเซ็ตรหัสผ่าน</div>
+    <div class="fg--ic"><i class="fa-solid fa-envelope f-ic" style="color:var(--text3)"></i><input class="inp" id="forgotEmail" placeholder="อีเมลของคุณ" style="border:1px solid var(--border)"></div>
+    <div class="modal__btns"><button class="btn btn--outline" onclick="closeM('m-forgot')">ยกเลิก</button><button class="btn btn--pink" onclick="doForgot()">ส่งลิงก์</button></div>
+  </div>
+</div>
+<div class="modal" id="m-alert">
+  <div class="modal__box">
+    <div class="modal__ic" id="alIc"><i class="fa-solid fa-circle-exclamation"></i></div>
+    <div class="modal__title" id="alT">แจ้งเตือน</div>
+    <div class="modal__msg" id="alMsg"></div>
+    <button class="btn btn--pink" onclick="closeM('m-alert')">ตกลง</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+</div><!-- /app -->
+
+<script>
+/* ==========================================================
+   SUPABASE
+   ========================================================== */
+const SB_URL = 'https://igipojhbetjhgufxbvgs.supabase.co';
+const SB_KEY = 'sb_publishable_tEmbm32nMcjG0gVPFQtT8A_Cz64sK8T';
+let sb; try { sb = supabase.createClient(SB_URL, SB_KEY); } catch(e) { sb = null; }
+
+/* ==========================================================
+   DATA (ตรงกับ Flutter home.dart)
+   ========================================================== */
+const CATS = ['ทั้งหมด','อาหารจานเดียว','ต้ม/แกง','ยำ/ส้มตำ','เครื่องดื่ม'];
+const MOCK = [
+  { id:'1', name:'ข้าวกะเพราหมูกรอบ ไข่ดาว', price:65, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400&auto=format&fit=crop&q=60' },
+  { id:'2', name:'ข้าวผัดต้มยำกุ้งแม่น้ำ', price:85, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&auto=format&fit=crop&q=60' },
+  { id:'3', name:'ผัดไทยกุ้งสด ห่อไข่', price:75, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400&auto=format&fit=crop&q=60' },
+  { id:'4', name:'ข้าวหมูกรอบ คั่วพริกเกลือ', price:60, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&auto=format&fit=crop&q=60' },
+  { id:'5', name:'ต้มยำกุ้งน้ำข้น หม้อไฟ', price:120, cat:'ต้ม/แกง', img:'https://images.unsplash.com/photo-1548946526-f69e2424cf45?w=400&auto=format&fit=crop&q=60' },
+  { id:'6', name:'ส้มตำไทยไข่เค็ม + ไก่ย่าง', price:80, cat:'ยำ/ส้มตำ', img:'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&auto=format&fit=crop&q=60' },
+  { id:'7', name:'ข้าวหน้าเนื้อย่าง ซอสแจ่ว', price:95, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&auto=format&fit=crop&q=60' },
+  { id:'8', name:'ชาไทยเย็น หวานมัน', price:35, cat:'เครื่องดื่ม', img:'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=60' },
+  { id:'9', name:'น้ำมะพร้าวน้ำหอมปั่นนมสด', price:45, cat:'เครื่องดื่ม', img:'https://images.unsplash.com/photo-1556881286-fc6915169721?w=400&auto=format&fit=crop&q=60' },
+];
+const RESTS = [
+  { n:'ครัวโดรนหลัก', img:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&h=150&fit=crop' },
+  { n:'ร้านส้มตำแซ่บ', img:'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=200&h=150&fit=crop' },
+  { n:'ก๋วยเตี๋ยวป้าแดง', img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&h=150&fit=crop' },
+  { n:'ชาบูหม้อร้อน', img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200&h=150&fit=crop' },
+];
+
+let menus = [], cart = {}, curCat = 'ทั้งหมด', qrInt = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  fillShowcase();
+  buildCats();
+  loadMenus();
+});
+
+/* ==========================================================
+   NAVIGATION
+   ========================================================== */
+function go(id) {
+  if (id !== 'payment' && qrInt) { clearInterval(qrInt); qrInt = null; }
+  document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
+  const el = document.getElementById('s-' + id);
+  if (el) { el.classList.add('on'); window.scrollTo({ top: 0, behavior: 'instant' }); }
+  
+  // Update Bottom Nav
+  const bNav = document.getElementById('bNav');
+  const bNavScreens = ['menu', 'orders', 'profile'];
+  if (bNavScreens.includes(id)) {
+    bNav.classList.add('on');
+    document.querySelectorAll('.bnav__it').forEach(b => b.classList.remove('on'));
+    const btn = document.getElementById('nav-' + id + '-btn');
+    if (btn) btn.classList.add('on');
+  } else {
+    bNav.classList.remove('on');
+  }
+
+  if (id === 'cart') renderCart();
+  if (id === 'payment') { updPayAmt(); startQr(); }
+}
+
+function switchOrderTab(tab) {
+  document.querySelectorAll('.tabs__btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab-cnt').forEach(c => c.classList.remove('on'));
+  document.getElementById('tab-' + tab).classList.add('on');
+  document.getElementById('ord-' + tab).classList.add('on');
+}
+
+/* ==========================================================
+   HELPERS
+   ========================================================== */
+function openM(id) { document.getElementById(id).classList.add('on'); }
+function closeM(id) { document.getElementById(id).classList.remove('on'); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2500);
+}
+function alert2(type, title, msg) {
+  const ic = document.getElementById('alIc');
+  ic.className = 'modal__ic';
+  if (type === 'error') { ic.classList.add('modal__ic--err'); ic.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>'; }
+  else if (type === 'success') { ic.classList.add('modal__ic--ok'); ic.innerHTML = '<i class="fa-solid fa-circle-check"></i>'; }
+  else { ic.classList.add('modal__ic--info'); ic.innerHTML = '<i class="fa-solid fa-circle-info"></i>'; }
+  document.getElementById('alT').textContent = title;
+  document.getElementById('alMsg').textContent = msg;
+  openM('m-alert');
+}
+
+/* ==========================================================
+   AUTH
+   ========================================================== */
+function doLogin(e) {
+  e.preventDefault();
+  const em = document.getElementById('lEmail').value.trim(), pw = document.getElementById('lPass').value;
+  if (!em || !pw) { alert2('error', 'แจ้งเตือน', 'กรุณากรอกอีเมลและรหัสผ่าน'); return; }
+  if (sb) {
+    sb.auth.signInWithPassword({ email: em, password: pw }).then(({ error }) => {
+      if (error) { toast('เข้าสู่ระบบ Demo Mode'); go('menu'); }
+      else { toast('เข้าสู่ระบบสำเร็จ!'); go('menu'); }
+    });
+  } else { toast('เข้าสู่ระบบ Demo Mode'); go('menu'); }
+}
+function doGoogleLogin() {
+  if (sb) { sb.auth.signInWithOAuth({ provider: 'google' }).then(({ error }) => { if (error) alert2('error', 'แจ้งเตือน', error.message); }); }
+  else { toast('Demo Mode'); go('menu'); }
+}
+function doLogout() { cart = {}; updBar(); if (sb) sb.auth.signOut(); toast('ออกจากระบบแล้ว'); go('login'); }
+function doForgot() {
+  const em = document.getElementById('forgotEmail').value.trim();
+  if (!em) { alert2('error', 'แจ้งเตือน', 'กรุณากรอกอีเมล'); return; }
+  closeM('m-forgot');
+  if (sb) { sb.auth.resetPasswordForEmail(em).then(({ error }) => {
+    if (error) alert2('error', 'แจ้งเตือน', error.message);
+    else alert2('success', 'สำเร็จ', 'ส่งลิงก์รีเซ็ตไปยังอีเมลแล้ว');
+  }); } else alert2('info', 'Demo', 'ระบบ Demo ไม่สามารถส่งอีเมลได้');
+}
+function doRegister(e) {
+  e.preventDefault();
+  const u = document.getElementById('rUser').value.trim(), em = document.getElementById('rEmail').value.trim(), pw = document.getElementById('rPass').value;
+  if (!u || !em || pw.length < 6) { alert2('error', 'แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบ (รหัสผ่านอย่างน้อย 6 ตัว)'); return; }
+  if (sb) {
+    sb.auth.signUp({ email: em, password: pw, options: { data: { username: u, phone: document.getElementById('rPhone').value, address: document.getElementById('rAddr').value } } }).then(({ error }) => {
+      if (error) alert2('error', 'แจ้งเตือน', error.message);
+      else { alert2('success', 'สำเร็จ', 'ลงทะเบียนสำเร็จ!'); setTimeout(() => { closeM('m-alert'); go('login'); }, 2000); }
+    });
+  } else { alert2('success', 'สำเร็จ', 'ลงทะเบียนสำเร็จ (Demo)'); setTimeout(() => { closeM('m-alert'); go('login'); }, 2000); }
+}
+
+/* ==========================================================
+   SHOWCASE & CAROUSEL
+   ========================================================== */
+function fillShowcase() {
+  document.getElementById('sh-rest').innerHTML = RESTS.map(r => `<div class="mcard" style="cursor:pointer" onclick="document.getElementById('searchInp').value='${r.n}'; filterM(); go('menu');"><img src="${r.img}" alt="${r.n}"><div class="mcard__lb">${r.n}</div></div>`).join('');
+  document.getElementById('sh-menu').innerHTML = MOCK.slice(0, 6).map(m => `<div class="mcard"><img src="${m.img}" alt="${m.name}"><div class="mcard__lb">${m.name}</div></div>`).join('');
+  
+  initCarousel('car-rest', 'sh-rest', 'nav-rest');
+  initCarousel('car-menu', 'sh-menu', 'nav-menu');
+}
+
+function initCarousel(wrapId, trackId, navId) {
+  const track = document.getElementById(trackId);
+  const nav = document.getElementById(navId);
+  const cards = track.children;
+  if (!cards.length) return;
+  
+  // Calculate pages
+  const itemsPerPage = 3; // roughly 3 items per view
+  const pages = Math.ceil(cards.length / itemsPerPage);
+  
+  // Create dots
+  nav.innerHTML = Array(pages).fill(0).map((_, i) => `<button class="carousel__dot${i===0?' on':''}" data-idx="${i}"></button>`).join('');
+  
+  let cur = 0;
+  const move = (idx) => {
+    cur = idx;
+    // item width = 130 + gap 10 = 140
+    track.style.transform = `translateX(-${cur * 140 * itemsPerPage}px)`;
+    Array.from(nav.children).forEach((d, i) => d.className = `carousel__dot${i===cur?' on':''}`);
+  };
+  
+  nav.addEventListener('click', e => {
+    if (e.target.classList.contains('carousel__dot')) {
+      move(parseInt(e.target.dataset.idx));
+      resetTimer();
+    }
+  });
+
+  // Auto scroll
+  let int;
+  const startTimer = () => { int = setInterval(() => { move((cur + 1) % pages); }, 3500); };
+  const resetTimer = () => { clearInterval(int); startTimer(); };
+  startTimer();
+}
+
+/* ==========================================================
+   CATEGORY
+   ========================================================== */
+function buildCats() {
+  document.getElementById('catBar').innerHTML = CATS.map(c => `<button class="chip ${c === curCat ? 'chip--on' : 'chip--off'}" onclick="pickCat('${c}')">${c}</button>`).join('');
+}
+function pickCat(c) { curCat = c; buildCats(); filterM(); }
+
+/* ==========================================================
+   MENU
+   ========================================================== */
+async function loadMenus() {
+  if (sb) { try {
+    const { data, error } = await sb.from('menus').select('*').eq('is_available', true).limit(20);
+    if (!error && data && data.length > 0) {
+      menus = data.map(d => ({ id: String(d.id), name: d.name, price: Number(d.price) || 35, cat: d.category || 'อาหารจานเดียว', img: d.image_url || MOCK[0].img }));
+      renderGrid(); return;
+    }
+  } catch(e) { console.warn(e); } }
+  menus = MOCK; renderGrid();
+}
+function renderGrid() {
+  const q = document.getElementById('searchInp').value.toLowerCase();
+  const g = document.getElementById('foodGrid');
+  const f = menus.filter(m => (curCat === 'ทั้งหมด' || m.cat === curCat) && m.name.toLowerCase().includes(q));
+  if (!f.length) { g.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text3);padding:40px"><i class="fa-solid fa-utensils" style="font-size:28px;display:block;margin-bottom:8px;color:var(--border)"></i>ไม่พบเมนูที่ค้นหา</div>'; return; }
+  g.innerHTML = f.map(m => {
+    const sel = cart[m.id] && cart[m.id] > 0;
+    return `<div class="fcard${sel ? ' sel' : ''}" onclick="toggleSel('${m.id}')">
+      <div class="fcard__img-wrap"><img class="fcard__img" src="${m.img}" alt="${m.name}" loading="lazy"><div class="fcard__chk"><i class="fa-solid fa-check"></i></div></div>
+      <div class="fcard__body"><div class="fcard__name">${m.name}</div><div class="fcard__price">฿${m.price}</div>
+      <button class="fcard__add" onclick="event.stopPropagation();addCart('${m.id}')"><i class="fa-solid fa-plus" style="font-size:10px"></i> เพิ่ม</button></div></div>`;
+  }).join('');
+}
+function filterM() { renderGrid(); }
+function toggleSel(id) { if (cart[id] && cart[id] > 0) delete cart[id]; else cart[id] = 1; updBar(); renderGrid(); }
+function addCart(id) { cart[id] = (cart[id] || 0) + 1; updBar(); renderGrid(); toast('เพิ่มลงตะกร้า +' + cart[id]); }
+
+/* ==========================================================
+   CART
+   ========================================================== */
+function updBar() {
+  const n = Object.values(cart).reduce((a, b) => a + b, 0);
+  const bar = document.getElementById('stkBar');
+  if (n > 0) { bar.style.display = 'block'; document.getElementById('stkCnt').textContent = n; } else bar.style.display = 'none';
+}
+function totals() {
+  let sub = 0; const ids = Object.keys(cart).filter(id => cart[id] > 0);
+  ids.forEach(id => { const m = menus.find(x => x.id === id); if (m) sub += m.price * cart[id]; });
+  return { sub, del: ids.length ? 20 : 0, total: sub + (ids.length ? 20 : 0), ids };
+}
+function renderCart() {
+  const c = document.getElementById('cartBox'), { sub, total, ids } = totals();
+  if (!ids.length) c.innerHTML = '<div class="cart-empty"><i class="fa-solid fa-bag-shopping"></i><div>ไม่มีรายการในตะกร้า</div></div>';
+  else c.innerHTML = ids.map(id => { const m = menus.find(x => x.id === id); if (!m) return ''; return `<div class="ci"><div class="ci__info"><div class="ci__name">${m.name}</div><div class="ci__price">฿${m.price} × ${cart[id]} = ฿${m.price * cart[id]}</div></div><div class="qty"><button class="qty__btn" onclick="chgQty('${id}',-1)"><i class="fa-solid fa-minus"></i></button><span class="qty__num">${cart[id]}</span><button class="qty__btn" onclick="chgQty('${id}',1)"><i class="fa-solid fa-plus"></i></button></div></div>`; }).join('');
+  document.getElementById('sSub').textContent = '฿' + sub;
+  document.getElementById('sTotal').textContent = '฿' + total;
+  document.getElementById('btnPay').disabled = !ids.length;
+}
+function chgQty(id, d) { if (cart[id] !== undefined) { cart[id] += d; if (cart[id] <= 0) delete cart[id]; } updBar(); renderCart(); }
+
+/* ==========================================================
+   PAYMENT QR
+   ========================================================== */
+function updPayAmt() { const { total } = totals(); document.getElementById('qrAmt').textContent = '฿' + total.toFixed(2); document.getElementById('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PromptPay-SkyFLASH-' + total; }
+function startQr() {
+  let t = 300; if (qrInt) clearInterval(qrInt);
+  const el = document.getElementById('qrTm'), st = document.getElementById('qrSt');
+  el.classList.remove('exp'); st.className = 'qr-status qr-status--wait'; st.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>รอการโอนเงิน...</span>';
+  qrInt = setInterval(() => { t--; el.textContent = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); if (t <= 0) { clearInterval(qrInt); qrInt = null; el.textContent = 'หมดเวลา'; el.classList.add('exp'); } }, 1000);
+}
+async function payOk() {
+  if (qrInt) { clearInterval(qrInt); qrInt = null; }
+  const { sub, total, ids } = totals();
+  if (!ids.length) { alert2('error', 'แจ้งเตือน', 'ไม่มีรายการในตะกร้า'); return; }
+  document.getElementById('qrSt').className = 'qr-status qr-status--ok';
+  document.getElementById('qrSt').innerHTML = '<i class="fa-solid fa-circle-check"></i><span>ชำระเงินสำเร็จ!</span>';
+  if (sb) { try { const items = ids.map(id => { const m = menus.find(x => x.id === id); return { name: m.name, qty: cart[id], price: m.price }; }); await sb.from('orders').insert([{ restaurant_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', items, food_total: sub, delivery_fee: 20, grand_total: total, status: 'pending', payment_method: 'qr_code', payment_status: 'paid' }]); } catch(e) { console.log(e); } }
+  setTimeout(() => startTracking(total), 800);
+}
+
+/* ==========================================================
+   ORDER TRACKING
+   ========================================================== */
+const TL = [
+  { t: 'ร้านค้ารับออเดอร์แล้ว', s: 'กำลังปรุงอาหารตามออเดอร์', ic: 'fa-utensils' },
+  { t: 'โดรน SkyFLASH กำลังบินจัดส่ง', s: 'กำลังบินนำส่งด้วยความเร็วอัตโนมัติ (GPS)', ic: 'fa-plane' },
+  { t: 'ส่งอาหารสำเร็จ ณ จุดรับ', s: 'โดรนลงจอดและส่งมอบอาหารเรียบร้อย ทานให้อร่อยครับ!', ic: 'fa-circle-check' },
+];
+let tStep = 0, tInt = null;
+
+function startTracking(total) {
+  go('tracking'); tStep = 0;
+  const ordId = '#SKF-' + String(Math.floor(Math.random() * 9000 + 1000));
+  document.getElementById('tOrdId').textContent = ordId;
+  document.getElementById('tPayInfo').textContent = 'PromptPay QR (ยืนยันแล้ว) • ฿' + total.toFixed(0);
+  // Build items
+  const { sub, ids } = totals();
+  let h = '<div style="font-size:15px;font-weight:600;margin-bottom:10px">สรุปรายการอาหาร</div>';
+  let firstItem = '';
+  ids.forEach(id => { 
+    const m = menus.find(x => x.id === id); 
+    if (m) { 
+      if (!firstItem) firstItem = m.name;
+      h += `<div class="track-sum__row"><span>${m.name} × ${cart[id]}</span><span>฿${m.price * cart[id]}</span></div>`; 
+    } 
+  });
+  h += '<div class="track-sum__div"></div>';
+  h += `<div class="track-sum__total"><span>ยอดรวมสุทธิ</span><span style="color:var(--pink)">฿${total.toFixed(0)}</span></div>`;
+  document.getElementById('trackItems').innerHTML = h;
+
+  // Add to active orders
+  document.getElementById('no-active-ord').style.display = 'none';
+  const activeList = document.getElementById('active-list');
+  const d = new Date(); const timeStr = `${d.getDate()} ส.ค. 69, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  const activeHtml = `
+    <div class="ord-card" onclick="go('tracking')">
+      <div class="ord-card__head"><span class="ord-card__id">${ordId}</span><span class="ord-card__date">${timeStr}</span></div>
+      <div class="ord-card__body">
+        <div class="ord-card__ic ord-card__ic--act"><i class="fa-solid fa-plane"></i></div>
+        <div class="ord-card__det">
+          <div class="ord-card__st ord-card__st--act" id="st-${ordId}">กำลังปรุงอาหาร</div>
+          <div class="ord-card__sum">${firstItem}... (${ids.length} รายการ)</div>
+        </div>
+        <div class="ord-card__price">฿${total.toFixed(0)}</div>
+      </div>
+    </div>`;
+  activeList.insertAdjacentHTML('afterbegin', activeHtml);
+
+  renderTL(); moveDrone();
+  if (tInt) clearInterval(tInt);
+  tInt = setInterval(() => { 
+    if (tStep < TL.length - 1) { 
+      tStep++; renderTL(); moveDrone(); 
+      const stEl = document.getElementById('st-'+ordId);
+      if (stEl) stEl.textContent = TL[tStep].t;
+    } else { 
+      clearInterval(tInt); tInt = null; 
+      const stEl = document.getElementById('st-'+ordId);
+      if (stEl) {
+        stEl.textContent = 'จัดส่งสำเร็จ';
+        stEl.className = 'ord-card__st ord-card__st--done';
+        stEl.parentElement.previousElementSibling.className = 'ord-card__ic ord-card__ic--done';
+        stEl.parentElement.previousElementSibling.innerHTML = '<i class="fa-solid fa-check"></i>';
+      }
+    } 
+  }, 8000);
+}
+function renderTL() {
+  document.getElementById('timeline').innerHTML = TL.map((s, i) => {
+    const done = tStep > i, now = tStep === i, last = i === TL.length - 1, on = done || now;
+    return `<div class="tl-step"><div class="tl-step__rail"><div class="tl-dot${done ? ' tl-dot--done' : now ? ' tl-dot--now' : ''}"><i class="fa-solid ${done ? 'fa-check' : s.ic}"></i></div>${!last ? `<div class="tl-line${done ? ' tl-line--done' : ''}"></div>` : ''}</div><div class="tl-step__text"><div class="tl-step__title${on ? ' on' : ''}">${s.t}</div><div class="tl-step__sub${on ? ' on' : ''}">${s.s}</div></div></div>`;
+  }).join('');
+}
+function moveDrone() {
+  const d = document.getElementById('droneEl');
+  const pos = [{ bottom: '22px', left: '50px', top: 'auto', right: 'auto' }, { bottom: '50%', left: '45%', top: 'auto', right: 'auto' }, { top: '22px', right: '50px', bottom: 'auto', left: 'auto' }];
+  const p = pos[Math.min(tStep, pos.length - 1)];
+  Object.assign(d.style, p);
+}
+</script>
+</body>
+</html>

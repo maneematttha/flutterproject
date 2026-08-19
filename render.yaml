@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: skyflash-backend-api
+    runtime: python
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SUPABASE_URL
+        value: https://igipojhbetjhgufxbvgs.supabase.co
+      - key: SUPABASE_KEY
+        value: sb_publishable_tEmbm32nMcjG0gVPFQtT8A_Cz64sK8T
+      - key: PORT
+        value: 10000
