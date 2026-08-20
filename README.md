@@ -1,6 +1,6 @@
 # ⚡ SkyFLASH
 
-ระบบสั่งอาหารอัจฉริยะและการจัดส่งอาหารอัตโนมัติผ่านโดรน (Smart Restaurant & Drone Delivery System) แบบ Real-time
+ระบบสั่งอาหารและจัดส่งอาหารด้วยโดรน แบบ Real-time
 
 ---
 
