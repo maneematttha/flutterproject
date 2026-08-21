@@ -202,6 +202,25 @@ class CheckOutPageState extends State<CheckOutPage> {
 
               const SizedBox(height: 24),
 
+              // ปุ่มติดตามโดรนแบบ Real-time
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.map, color: Colors.white),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[600],
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () => Get.toNamed("/TrackingPage"),
+                  label: const Text(
+                    'ดูแผนที่ติดตามโดรน (Live Map)',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
               // ปุ่มกลับสู่หน้าหลัก
               SizedBox(
                 width: double.infinity,

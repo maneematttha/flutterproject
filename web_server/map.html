@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyFLASH - Live Drone Tracking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS for Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body { margin: 0; padding: 0; font-family: 'Kanit', sans-serif; display: flex; flex-direction: column; height: 100vh; }
+    .header { background: #EC407A; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1000; }
+    .header h1 { margin: 0; font-size: 20px; }
+    .status-badge { background: #4CAF50; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+    #map { flex: 1; width: 100%; }
+    .info-panel { position: absolute; bottom: 20px; left: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 1000; min-width: 250px; }
+    .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+    .info-label { color: #666; }
+    .info-val { font-weight: 600; color: #333; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🛰️ SkyFLASH Live Tracking</h1>
+    <div id="statusBadge" class="status-badge">🟢 เชื่อมต่อแล้ว</div>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="info-panel">
+    <div style="font-weight: 600; font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">DRONE-01 Status</div>
+    <div class="info-row"><span class="info-label">สถานะ (Status)</span> <span class="info-val" id="d-status">Loading...</span></div>
+    <div class="info-row"><span class="info-label">แบตเตอรี่ (Battery)</span> <span class="info-val" id="d-battery">--%</span></div>
+    <div class="info-row"><span class="info-label">ความเร็ว (Speed)</span> <span class="info-val" id="d-speed">-- m/s</span></div>
+    <div class="info-row"><span class="info-label">ความสูง (Altitude)</span> <span class="info-val" id="d-alt">-- m</span></div>
+    <div class="info-row"><span class="info-label">ละติจูด (Lat)</span> <span class="info-val" id="d-lat">--</span></div>
+    <div class="info-row"><span class="info-label">ลองจิจูด (Lng)</span> <span class="info-val" id="d-lng">--</span></div>
+  </div>
+
+  <script>
+    // 1. Setup Map
+    const map = L.map('map').setView([13.7563, 100.5018], 15);
+    
+    // Add Google Maps Tile Layer
+    L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+    }).addTo(map);
+
+    // Custom Drone Icon
+    const droneIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/3233/3233385.png', // Drone Icon URL
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
+    });
+
+    // Add Marker for DRONE-01
+    let droneMarker = L.marker([13.7563, 100.5018], {icon: droneIcon}).addTo(map);
+    
+    // Add Markers for Restaurant & Customer
+    L.marker([13.7563, 100.5018]).addTo(map).bindPopup("ร้านอาหาร SkyFLASH");
+    L.marker([13.7620, 100.5080]).addTo(map).bindPopup("จุดส่งมอบ (ลูกค้า)");
+
+    // 2. Setup Supabase
+    const supabaseUrl = 'https://igipojhbetjhgufxbvgs.supabase.co';
+    const supabaseKey = 'sb_publishable_tEmbm32nMcjG0gVPFQtT8A_Cz64sK8T';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Fetch Initial Data
+    async function fetchInitialDrone() {
+      const { data, error } = await supabase.from('drones').select('*').eq('id', 'DRONE-01').single();
+      if (data) {
+        updateUIAndMap(data);
+        map.setView([data.current_lat, data.current_lng]);
+      }
+    }
+    
+    fetchInitialDrone();
+
+    function updateUIAndMap(payload) {
+      // Update Marker position
+      const lat = payload.current_lat;
+      const lng = payload.current_lng;
+      droneMarker.setLatLng([lat, lng]);
+      
+      // Update Panel Info
+      document.getElementById('d-status').innerText = payload.status;
+      document.getElementById('d-battery').innerText = payload.battery_level + '%';
+      document.getElementById('d-speed').innerText = payload.speed + ' m/s';
+      document.getElementById('d-alt').innerText = payload.current_altitude + ' m';
+      document.getElementById('d-lat').innerText = lat.toFixed(5);
+      document.getElementById('d-lng').innerText = lng.toFixed(5);
+    }
+
+    // 3. Subscribe to Realtime Updates
+    const channel = supabase.channel('realtime_drones')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'drones', filter: 'id=eq.DRONE-01' }, 
+        (payload) => {
+          console.log("Drone Moved!", payload.new);
+          updateUIAndMap(payload.new);
+        }
+      )
+      .subscribe((status) => {
+        const badge = document.getElementById('statusBadge');
+        if(status === 'SUBSCRIBED') {
+          badge.innerText = '🟢 ออนไลน์ (Realtime)';
+          badge.style.background = '#4CAF50';
+        } else {
+          badge.innerText = '🔴 ออฟไลน์ (Offline)';
+          badge.style.background = '#F44336';
+        }
+      });
+  </script>
+</body>
+</html>
