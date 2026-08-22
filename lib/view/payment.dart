@@ -13,6 +13,7 @@ class PaymentPageState extends State<PaymentPage> {
   List<Map<String, dynamic>> _cartItems = [];
   String _selectedPaymentMethod = 'qr_code'; // 'qr_code' หรือ 'cash'
   final double _droneDeliveryFee = 20.0; // ค่าจัดส่งด้วยโดรน
+  String? _restaurantId; // ดึงมาจาก item ในตะกร้า (ทุก item มี restaurant_id ติดมาอยู่แล้ว)
 
   @override
   void initState() {
@@ -25,6 +26,29 @@ class PaymentPageState extends State<PaymentPage> {
         newItem['price'] = (newItem['price'] as num?)?.toDouble() ?? 35.0;
         return newItem;
       }).toList();
+    } else if (rawData is Map<String, dynamic>) {
+      // เผื่อบางหน้าส่งมาเป็น Map ที่มี 'items' ห่ออยู่
+      final items = rawData['items'];
+      if (items is List) {
+        _cartItems = items.map((item) {
+          var newItem = Map<String, dynamic>.from(item);
+          newItem['quantity'] = newItem['quantity'] ?? 1;
+          newItem['price'] = (newItem['price'] as num?)?.toDouble() ?? 35.0;
+          return newItem;
+        }).toList();
+      }
+      _restaurantId ??= rawData['restaurant_id']?.toString();
+    }
+
+    // ดึง restaurant_id จาก item แรกที่มีค่า (ทุก item ควรมาจากร้านเดียวกัน)
+    if (_restaurantId == null) {
+      for (final item in _cartItems) {
+        final rid = item['restaurant_id']?.toString();
+        if (rid != null && rid.isNotEmpty) {
+          _restaurantId = rid;
+          break;
+        }
+      }
     }
   }
 
@@ -69,6 +93,16 @@ class PaymentPageState extends State<PaymentPage> {
       return;
     }
 
+    if (_restaurantId == null) {
+      Get.snackbar(
+        'การแจ้งเตือน',
+        'ไม่พบข้อมูลร้านค้าของรายการอาหาร กรุณากลับไปเลือกเมนูใหม่อีกครั้ง',
+        backgroundColor: Colors.red[400],
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     if (_selectedPaymentMethod == 'qr_code') {
       _showQrPaymentBottomSheet();
     } else {
@@ -92,6 +126,7 @@ class PaymentPageState extends State<PaymentPage> {
             'items': _cartItems,
             'total': _calculateGrandTotal(),
             'payment_method': _selectedPaymentMethod,
+            'restaurant_id': _restaurantId,
           },
         );
       },
@@ -187,6 +222,7 @@ class PaymentPageState extends State<PaymentPage> {
                         'items': _cartItems,
                         'total': _calculateGrandTotal(),
                         'payment_method': 'qr_code',
+                        'restaurant_id': _restaurantId,
                       },
                     );
                   },

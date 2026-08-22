@@ -21,117 +21,40 @@ class HomePageState extends State<HomePage> {
   bool _isLoading = true;
   String _selectedCategory = 'ทั้งหมด';
 
-  // รายการเมนูเริ่มต้น (อาหารไทยพร้อมราคาเฉพาะตัว)
-  final List<Map<String, dynamic>> _defaultMenus = [
-    {
-      'id': '1',
-      'name': 'ข้าวกะเพราหมูกรอบ ไข่ดาว',
-      'price': 65.0,
-      'category': 'อาหารจานเดียว',
-      'image_url': 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '2',
-      'name': 'ข้าวผัดต้มยำกุ้งแม่น้ำ',
-      'price': 85.0,
-      'category': 'อาหารจานเดียว',
-      'image_url': 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '3',
-      'name': 'ผัดไทยกุ้งสด ห่อไข่',
-      'price': 75.0,
-      'category': 'อาหารจานเดียว',
-      'image_url': 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '4',
-      'name': 'ข้าวหมูกรอบ คั่วพริกเกลือ',
-      'price': 60.0,
-      'category': 'อาหารจานเดียว',
-      'image_url': 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '5',
-      'name': 'ต้มยำกุ้งน้ำข้น หม้อไฟ',
-      'price': 120.0,
-      'category': 'ต้ม/แกง',
-      'image_url': 'https://images.unsplash.com/photo-1548946526-f69e2424cf45?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '6',
-      'name': 'ส้มตำไทยไข่เค็ม + ไก่ย่าง',
-      'price': 80.0,
-      'category': 'ยำ/ส้มตำ',
-      'image_url': 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '7',
-      'name': 'ข้าวหน้าเนื้อย่าง ซอสแจ่ว',
-      'price': 95.0,
-      'category': 'อาหารจานเดียว',
-      'image_url': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '8',
-      'name': 'ข้าวขาหมูตุ๋นยาจีน พิเศษ',
-      'price': 55.0,
-      'category': 'อาหารจานเดียว',
-      'image_url': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '9',
-      'name': 'ชาไทยเย็น หวานมัน',
-      'price': 35.0,
-      'category': 'เครื่องดื่ม',
-      'image_url': 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60',
-    },
-    {
-      'id': '10',
-      'name': 'น้ำมะพร้าวน้ำหอมปั่นนมสด',
-      'price': 45.0,
-      'category': 'เครื่องดื่ม',
-      'image_url': 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&auto=format&fit=crop&q=60',
-    },
-  ];
-
   Future<void> _fetchData() async {
     setState(() => _isLoading = true);
     try {
-      // 1. ลองดึงข้อมูลจากตาราง 'menus' ใน Supabase
       final data = await Supabase.instance.client
           .from('menus')
           .select()
           .order('created_at', ascending: true);
 
-      if (data.isNotEmpty) {
-        final parsed = (data as List).map((item) {
-          return {
-            'id': item['id']?.toString() ?? '',
-            'name': item['name']?.toString() ?? '',
-            'price': (item['price'] as num?)?.toDouble() ?? 35.0,
-            'category': item['category']?.toString() ?? 'ทั่วไป',
-            'image_url': item['image_url']?.toString() ?? '',
-          };
-        }).toList();
+      final parsed = (data as List)
+          .where((item) => item['is_available'] != false) // กรองเมนูที่ปิดขายออก
+          .map((item) {
+        return {
+          'id': item['id']?.toString() ?? '',
+          'restaurant_id': item['restaurant_id']?.toString() ?? '', // สำคัญ: ต้องติดไปกับ item เพื่อใช้ตอนสร้างออเดอร์
+          'name': item['name']?.toString() ?? '',
+          'price': (item['price'] as num?)?.toDouble() ?? 0.0,
+          'category': item['category']?.toString() ?? 'ทั่วไป',
+          'image_url': item['image_url']?.toString() ?? '',
+        };
+      }).toList();
 
-        setState(() {
-          _menuItems = parsed;
-          _filteredMenuItems = parsed;
-          _isLoading = false;
-        });
-        return;
-      }
-    } catch (_) {
-      // หากยังไม่ได้สร้างตาราง menus ใน Supabase ให้ใช้เมนูเริ่มต้น
+      setState(() {
+        _menuItems = parsed;
+        _filteredMenuItems = parsed;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      Get.snackbar(
+        'Error',
+        'โหลดเมนูไม่สำเร็จ กรุณาลองใหม่ (ดึงข้อมูลแบบ pull-to-refresh ยังไม่รองรับ กดปุ่มด้านล่างเพื่อรีเฟรช)',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
-
-    // 2. ใช้รายการเมนูเริ่มต้น
-    setState(() {
-      _menuItems = List.from(_defaultMenus);
-      _filteredMenuItems = List.from(_defaultMenus);
-      _isLoading = false;
-    });
   }
 
   void _filterMenus() {
@@ -160,7 +83,7 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ['ทั้งหมด', 'อาหารจานเดียว', 'ต้ม/แกง', 'ยำ/ส้มตำ', 'เครื่องดื่ม'];
+    final categories = ['ทั้งหมด', 'อาหารจานเดียว', 'ของทอด', 'ของหวาน', 'เครื่องดื่ม'];
 
     return Scaffold(
       appBar: AppBar(
@@ -177,6 +100,11 @@ class HomePageState extends State<HomePage> {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'รีเฟรชเมนู',
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: _fetchData,
+          ),
           IconButton(
             tooltip: 'หน้าร้านค้า (Restaurant Mode)',
             icon: const Icon(Icons.storefront_rounded, color: Colors.white),

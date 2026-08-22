@@ -72,11 +72,9 @@ img { display: block; max-width: 100%; }
   position: relative;
   overflow-x: hidden;
 }
-/* On wider screens, give it a phone-like shadow */
 @media (min-width: 481px) {
   .app { box-shadow: var(--shadow-md); }
 }
-/* On real mobile, let it be full width */
 @media (max-width: 480px) {
   .app { max-width: 100%; }
 }
@@ -199,11 +197,9 @@ img { display: block; max-width: 100%; }
 .inp:focus { box-shadow: 0 0 0 2px var(--pink); }
 
 /* ===========================================================
-   1 · LOGIN SCREEN — พื้นหลังขาว
+   1 · LOGIN SCREEN
    =========================================================== */
-.login-scr {
-  background: var(--white);
-}
+.login-scr { background: var(--white); }
 .login__body {
   display: flex;
   flex-direction: column;
@@ -280,7 +276,6 @@ img { display: block; max-width: 100%; }
   color: var(--text4);
 }
 
-/* Showcase (bottom section) */
 .showcase {
   background: var(--bg);
   color: var(--text);
@@ -300,7 +295,6 @@ img { display: block; max-width: 100%; }
   gap: 6px;
   margin-bottom: 10px;
 }
-/* Carousel wrapper */
 .carousel {
   position: relative;
   overflow: hidden;
@@ -361,7 +355,6 @@ img { display: block; max-width: 100%; }
   text-align: center;
   margin-bottom: 20px;
 }
-/* Register uses normal white inputs with border */
 .reg-form .inp {
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
@@ -507,7 +500,6 @@ img { display: block; max-width: 100%; }
 }
 .fcard__add:active { background: var(--pink); color: var(--white); }
 
-/* Sticky bottom bar */
 .stk-bar {
   position: fixed;
   bottom: 0;
@@ -639,7 +631,7 @@ img { display: block; max-width: 100%; }
 .track-card__head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   margin-bottom: 12px;
 }
 .track-badge {
@@ -650,7 +642,6 @@ img { display: block; max-width: 100%; }
   font-size: 12px;
   font-weight: 600;
 }
-/* GPS Mock Map */
 .gps-map {
   width: 100%;
   height: 150px;
@@ -674,6 +665,7 @@ img { display: block; max-width: 100%; }
   font-size: 26px;
   transition: all 2s ease-in-out;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  left: 20%; top: 60%;
 }
 .gps-map__pin-a { position: absolute; bottom: 16px; left: 16px; font-size: 16px; color: var(--pink); }
 .gps-map__pin-b { position: absolute; top: 16px; right: 16px; font-size: 16px; color: var(--success); }
@@ -686,7 +678,6 @@ img { display: block; max-width: 100%; }
   padding: 2px 8px;
   border-radius: var(--r-pill);
 }
-/* Timeline */
 .tl-step { display: flex; gap: 12px; }
 .tl-step__rail { display: flex; flex-direction: column; align-items: center; width: 30px; flex-shrink: 0; }
 .tl-dot {
@@ -701,14 +692,13 @@ img { display: block; max-width: 100%; }
 .tl-dot--done { background: var(--pink); border-color: var(--pink); color: var(--white); }
 .tl-dot--now { background: var(--pink-light); border-color: var(--pink); color: var(--pink); animation: pulse 1.5s ease infinite; }
 @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(236,64,122,0.25); } 50% { box-shadow: 0 0 0 7px rgba(236,64,122,0); } }
-.tl-line { flex: 1; width: 2px; background: var(--border); }
+.tl-line { flex: 1; width: 2px; background: var(--border); min-height: 24px; }
 .tl-line--done { background: var(--pink); }
 .tl-step__text { padding-bottom: 20px; }
 .tl-step__title { font-size: 14px; font-weight: 600; color: var(--text4); }
 .tl-step__title.on { color: var(--text); }
 .tl-step__sub { font-size: 12px; color: var(--text4); margin-top: 2px; }
 .tl-step__sub.on { color: var(--text3); }
-/* Track summary */
 .track-sum__row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 13px; color: var(--text2); }
 .track-sum__div { border-top: 1px dashed var(--border); margin: 6px 0; }
 .track-sum__total { display: flex; justify-content: space-between; font-size: 15px; font-weight: 600; }
@@ -776,7 +766,7 @@ img { display: block; max-width: 100%; }
   padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 50;
   border-top: 1px solid var(--border);
-  display: none; /* hidden by default, shown by JS */
+  display: none;
 }
 @media (max-width: 480px) { .bnav { max-width: 100%; } }
 .bnav.on { display: flex; }
@@ -874,7 +864,7 @@ img { display: block; max-width: 100%; }
       <button type="submit" class="btn btn--login mt8">เข้าสู่ระบบ</button>
     </form>
 
-    <button class="login__reg" onclick="go('register')">ยังไม่มีบัญชี? ลงทะเบียนที่นี่</button>
+    <button class="login__reg" onclick="go('register')">ยังไม่มีบัญชี? <strong>ลงทะเบียนที่นี่</strong></button>
 
     <div class="login__divider"><span>หรือ</span></div>
 
@@ -959,7 +949,7 @@ img { display: block; max-width: 100%; }
     <div class="pro-card" style="padding:12px; margin-bottom:0; cursor:pointer" onclick="go('profile')">
       <div class="pro-card__av" style="width:40px; height:40px; font-size:16px"><i class="fa-solid fa-location-dot"></i></div>
       <div class="pro-card__info">
-        <div class="pro-card__n" style="font-size:14px">หอพัก A, ประตู 2</div>
+        <div class="pro-card__n" style="font-size:14px" id="cAddr">หอพัก A, ประตู 2</div>
         <div class="pro-card__e" style="font-size:12px">ระยะทาง 2.5 กม. (บิน 5 นาที)</div>
       </div>
       <i class="fa-solid fa-chevron-right" style="color:var(--text4); font-size:14px"></i>
@@ -998,475 +988,622 @@ img { display: block; max-width: 100%; }
 <!-- ===== 6 · ORDER TRACKING ===== -->
 <div id="s-tracking" class="scr">
   <div class="hdr">
-    <button class="ic-btn" onclick="go('menu')"><i class="fa-solid fa-arrow-left"></i></button>
-    <div class="hdr__title">ติดตามออเดอร์</div>
+    <button class="ic-btn" onclick="go('orders')"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="hdr__title">ติดตามสถานะโดรน</div>
   </div>
-  <div class="cnt">
+  <div class="cnt" style="padding-bottom:90px">
     <div class="track-card">
       <div class="track-card__head">
-        <i class="fa-solid fa-check-circle" style="color:var(--success);font-size:20px"></i>
-        <span style="font-weight:600;font-size:15px">ส่งคำสั่งซื้อสำเร็จแล้ว!</span>
-        <span style="font-size:12px;color:var(--text3);margin-left:auto" id="tOrdId">#SKF-0001</span>
+        <div>
+          <div style="font-size:12px;color:var(--text3)">หมายเลขคำสั่งซื้อ</div>
+          <div style="font-weight:700;font-size:16px" id="trkId">#SF-88392</div>
+        </div>
+        <span class="track-badge"><i class="fa-solid fa-drone"></i> โดรนกำลังบินจัดส่ง</span>
       </div>
-      <div style="font-size:13px;color:var(--text3);text-align:center">ระบบได้ส่งข้อมูลไปยังร้านค้าและเตรียมส่งโดรน SkyFLASH</div>
-      <div class="track-badge" style="margin-top:10px;text-align:center" id="tPayInfo">PromptPay QR (ยืนยันแล้ว)</div>
+
+      <!-- Live GPS Map Simulation -->
+      <div class="gps-map">
+        <div class="gps-map__grid"></div>
+        <div class="gps-map__pin-a"><i class="fa-solid fa-store"></i></div>
+        <div class="gps-map__pin-b"><i class="fa-solid fa-house"></i></div>
+        <div class="gps-map__drone" id="droneIcon"><i class="fa-solid fa-plane-up" style="color:var(--pink)"></i></div>
+        <div class="gps-map__lbl">SkyFLASH Drone #04</div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="tl-step">
+        <div class="tl-step__rail">
+          <div class="tl-dot tl-dot--done"><i class="fa-solid fa-check"></i></div>
+          <div class="tl-line tl-line--done"></div>
+        </div>
+        <div class="tl-step__text">
+          <div class="tl-step__title on">ยืนยันคำสั่งซื้อแล้ว</div>
+          <div class="tl-step__sub on">ระบบรับออเดอร์เรียบร้อยแล้ว</div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-step__rail">
+          <div class="tl-dot tl-dot--done"><i class="fa-solid fa-check"></i></div>
+          <div class="tl-line tl-line--done"></div>
+        </div>
+        <div class="tl-step__text">
+          <div class="tl-step__title on">ร้านค้ากำลังปรุงอาหาร</div>
+          <div class="tl-step__sub on">จัดเตรียมเมนูสดใหม่ตามออเดอร์</div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-step__rail">
+          <div class="tl-dot tl-dot--now"><i class="fa-solid fa-plane-departure"></i></div>
+          <div class="tl-line"></div>
+        </div>
+        <div class="tl-step__text">
+          <div class="tl-step__title on">โดรนออกเดินทางจัดส่ง</div>
+          <div class="tl-step__sub on">คาดว่าจะถึงในอีก 8 นาที</div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-step__rail">
+          <div class="tl-dot"><i class="fa-solid fa-box-open"></i></div>
+        </div>
+        <div class="tl-step__text">
+          <div class="tl-step__title">จัดส่งถึงจุดรับเรียบร้อย</div>
+          <div class="tl-step__sub">โดรนลงจอดและหย่อนพัสดุปลอดภัย</div>
+        </div>
+      </div>
     </div>
 
-    <div class="gps-map">
-      <div class="gps-map__grid"></div>
-      <div class="gps-map__pin-a"><i class="fa-solid fa-store"></i></div>
-      <div class="gps-map__pin-b"><i class="fa-solid fa-location-dot"></i></div>
-      <div class="gps-map__drone" id="droneEl">🚁</div>
-      <div class="gps-map__lbl">SkyFLASH GPS Tracking</div>
-    </div>
-
+    <!-- Summary Box -->
     <div class="track-card">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-        <i class="fa-solid fa-satellite-dish" style="color:var(--pink)"></i>
-        <span style="font-size:15px;font-weight:600">สถานะการจัดส่ง (Real-time)</span>
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px">รายการอาหาร</div>
+      <div id="trkItems"></div>
+      <div class="track-sum__div"></div>
+      <div class="track-sum__total">
+        <span>ยอดรวมทั้งหมด</span>
+        <span style="color:var(--pink)" id="trkTotal">฿0</span>
       </div>
-      <div id="timeline"></div>
     </div>
-
-    <div class="track-card" id="trackItems"></div>
-
-    <button class="btn btn--pink mt8" onclick="cart={};updBar();go('menu')"><i class="fa-solid fa-utensils"></i> สั่งอาหารเพิ่ม / กลับหน้าหลัก</button>
   </div>
 </div>
 
-<!-- ===== 7 · MY ORDERS ===== -->
+<!-- ===== 7 · ORDERS HISTORY ===== -->
 <div id="s-orders" class="scr">
   <div class="hdr">
-    <div class="hdr__title hdr__title--c">ออเดอร์ของฉัน</div>
+    <div class="hdr__title hdr__title--c">รายการคำสั่งซื้อ</div>
   </div>
   <div class="tabs">
-    <button class="tabs__btn on" onclick="switchOrderTab('active')" id="tab-active">กำลังดำเนินการ</button>
-    <button class="tabs__btn" onclick="switchOrderTab('history')" id="tab-history">ประวัติ</button>
+    <button class="tabs__btn on" onclick="switchTab(this, 'tab-active')">กำลังดำเนินการ</button>
+    <button class="tabs__btn" onclick="switchTab(this, 'tab-history')">ประวัติการสั่งซื้อ</button>
   </div>
-  <div class="cnt" style="padding:0; padding-bottom:70px">
-    <div class="tab-cnt on" id="ord-active">
-      <div style="text-align:center; padding:40px 20px; color:var(--text3)" id="no-active-ord">
-        <i class="fa-solid fa-box-open" style="font-size:32px; color:var(--border); margin-bottom:12px; display:block"></i>
-        ไม่มีออเดอร์ที่กำลังดำเนินการ
-      </div>
-      <div id="active-list"></div>
-    </div>
-    <div class="tab-cnt" id="ord-history">
-      <div class="ord-card">
-        <div class="ord-card__head">
-          <span class="ord-card__id">#SKF-8809</span>
-          <span class="ord-card__date">18 ส.ค. 69, 12:30</span>
-        </div>
-        <div class="ord-card__body">
-          <div class="ord-card__ic ord-card__ic--done"><i class="fa-solid fa-check"></i></div>
-          <div class="ord-card__det">
-            <div class="ord-card__st ord-card__st--done">จัดส่งสำเร็จ</div>
-            <div class="ord-card__sum">ข้าวกะเพราหมูกรอบ... (3 รายการ)</div>
-          </div>
-          <div class="ord-card__price">฿215</div>
-        </div>
-      </div>
-    </div>
+  <div class="tab-cnt on" id="tab-active">
+    <div id="activeOrdersList"></div>
+  </div>
+  <div class="tab-cnt" id="tab-history">
+    <div id="historyOrdersList"></div>
   </div>
 </div>
 
 <!-- ===== 8 · PROFILE ===== -->
 <div id="s-profile" class="scr">
   <div class="hdr">
-    <div class="hdr__title hdr__title--c">บัญชีผู้ใช้</div>
+    <div class="hdr__title hdr__title--c">โปรไฟล์ของฉัน</div>
   </div>
-  <div class="cnt" style="padding-bottom:80px">
+  <div class="cnt" style="padding-bottom:90px">
     <div class="pro-card">
-      <div class="pro-card__av"><i class="fa-solid fa-user"></i></div>
+      <div class="pro-card__av" id="pAvatar">U</div>
       <div class="pro-card__info">
-        <div class="pro-card__n" id="proName">ผู้ใช้งาน Demo</div>
-        <div class="pro-card__e" id="proEmail">demo@skyflash.com</div>
+        <div class="pro-card__n" id="pName">User</div>
+        <div class="pro-card__e" id="pEmail">user@example.com</div>
       </div>
     </div>
 
-    <div style="font-size:15px; font-weight:600; margin-bottom:10px">พิกัดจัดส่งโดรน (Drop-off Point)</div>
-    <div class="gps-map" style="height:120px; cursor:pointer" onclick="alert2('info','จำลองแผนที่','ในแอปจริงจะเปิด Google Maps ให้ปักหมุดจุดลงจอดโดรน')">
-      <div class="gps-map__grid"></div>
-      <div class="gps-map__pin-b" style="top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px"><i class="fa-solid fa-location-dot"></i></div>
-      <div class="gps-map__lbl" style="font-size:11px">หอพัก A, ประตู 2</div>
-    </div>
-
-    <div style="font-size:15px; font-weight:600; margin:top:20px; margin-bottom:10px">ตั้งค่าบัญชี</div>
     <div class="menu-list">
-      <button class="menu-list__it"><i class="fa-solid fa-bell"></i> การแจ้งเตือน <i class="fa-solid fa-chevron-right"></i></button>
-      <button class="menu-list__it"><i class="fa-solid fa-credit-card"></i> ช่องทางชำระเงิน <i class="fa-solid fa-chevron-right"></i></button>
-      <button class="menu-list__it"><i class="fa-solid fa-headset"></i> ติดต่อศูนย์ช่วยเหลือ <i class="fa-solid fa-chevron-right"></i></button>
-      <button class="menu-list__it" onclick="doLogout()" style="color:var(--danger)"><i class="fa-solid fa-arrow-right-from-bracket" style="color:var(--danger)"></i> ออกจากระบบ <i class="fa-solid fa-chevron-right"></i></button>
+      <button class="menu-list__it" onclick="toast('ระบบแก้ไขโปรไฟล์เปิดเร็วๆ นี้')">
+        <i class="fa-solid fa-user-pen"></i>
+        <span>แก้ไขข้อมูลส่วนตัว</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+      <button class="menu-list__it" onclick="toast('ที่อยู่จัดส่งของคุณถูกบันทึกแล้ว')">
+        <i class="fa-solid fa-location-dot"></i>
+        <span>ที่อยู่จัดส่งของฉัน</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+      <button class="menu-list__it" onclick="toast('ติดต่อฝ่ายสนับสนุน SkyFLASH ผ่าน LINE @skyflash')">
+        <i class="fa-solid fa-headset"></i>
+        <span>ช่วยเหลือ / ศูนย์ซัพพอร์ต</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+      <button class="menu-list__it" onclick="doLogout()" style="color:var(--danger)">
+        <i class="fa-solid fa-arrow-right-from-bracket" style="color:var(--danger)"></i>
+        <span>ออกจากระบบ</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ===== BOTTOM NAVIGATION ===== -->
 <nav class="bnav" id="bNav">
-  <button class="bnav__it on" onclick="go('menu')" id="nav-menu-btn"><i class="fa-solid fa-house"></i> หน้าแรก</button>
-  <button class="bnav__it" onclick="go('orders')" id="nav-orders-btn"><i class="fa-solid fa-receipt"></i> ออเดอร์</button>
-  <button class="bnav__it" onclick="go('profile')" id="nav-profile-btn"><i class="fa-solid fa-user"></i> บัญชี</button>
+  <button class="bnav__it on" onclick="go('menu')">
+    <i class="fa-solid fa-utensils"></i>
+    <span>เมนูอาหาร</span>
+  </button>
+  <button class="bnav__it" onclick="go('orders')">
+    <i class="fa-solid fa-receipt"></i>
+    <span>ออเดอร์</span>
+  </button>
+  <button class="bnav__it" onclick="go('profile')">
+    <i class="fa-solid fa-user"></i>
+    <span>โปรไฟล์</span>
+  </button>
 </nav>
 
-<!-- ===== MODALS ===== -->
-<div class="modal" id="m-forgot">
+<!-- ===== MODAL ===== -->
+<div class="modal" id="modal">
   <div class="modal__box">
-    <div class="modal__ic modal__ic--info"><i class="fa-solid fa-envelope"></i></div>
-    <div class="modal__title">ลืมรหัสผ่าน</div>
-    <div class="modal__msg">กรุณากรอกอีเมลของคุณเพื่อรับลิงก์รีเซ็ตรหัสผ่าน</div>
-    <div class="fg--ic"><i class="fa-solid fa-envelope f-ic" style="color:var(--text3)"></i><input class="inp" id="forgotEmail" placeholder="อีเมลของคุณ" style="border:1px solid var(--border)"></div>
-    <div class="modal__btns"><button class="btn btn--outline" onclick="closeM('m-forgot')">ยกเลิก</button><button class="btn btn--pink" onclick="doForgot()">ส่งลิงก์</button></div>
+    <div class="modal__ic modal__ic--info" id="mIc"><i class="fa-solid fa-info"></i></div>
+    <div class="modal__title" id="mTt">แจ้งเตือน</div>
+    <div class="modal__msg" id="mMsg">ข้อความ...</div>
+    <div class="modal__btns" id="mBtns">
+      <button class="btn btn--pink" onclick="closeM()">ตกลง</button>
+    </div>
   </div>
 </div>
-<div class="modal" id="m-alert">
-  <div class="modal__box">
-    <div class="modal__ic" id="alIc"><i class="fa-solid fa-circle-exclamation"></i></div>
-    <div class="modal__title" id="alT">แจ้งเตือน</div>
-    <div class="modal__msg" id="alMsg"></div>
-    <button class="btn btn--pink" onclick="closeM('m-alert')">ตกลง</button>
-  </div>
-</div>
-<div class="toast" id="toast"></div>
 
-</div><!-- /app -->
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">แจ้งเตือนระบบ</div>
+
+</div>
 
 <script>
-/* ==========================================================
-   SUPABASE
-   ========================================================== */
-const SB_URL = 'https://igipojhbetjhgufxbvgs.supabase.co';
-const SB_KEY = 'sb_publishable_tEmbm32nMcjG0gVPFQtT8A_Cz64sK8T';
-let sb; try { sb = supabase.createClient(SB_URL, SB_KEY); } catch(e) { sb = null; }
-
-/* ==========================================================
-   DATA (ตรงกับ Flutter home.dart)
-   ========================================================== */
-const CATS = ['ทั้งหมด','อาหารจานเดียว','ต้ม/แกง','ยำ/ส้มตำ','เครื่องดื่ม'];
-const MOCK = [
-  { id:'1', name:'ข้าวกะเพราหมูกรอบ ไข่ดาว', price:65, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400&auto=format&fit=crop&q=60' },
-  { id:'2', name:'ข้าวผัดต้มยำกุ้งแม่น้ำ', price:85, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&auto=format&fit=crop&q=60' },
-  { id:'3', name:'ผัดไทยกุ้งสด ห่อไข่', price:75, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400&auto=format&fit=crop&q=60' },
-  { id:'4', name:'ข้าวหมูกรอบ คั่วพริกเกลือ', price:60, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&auto=format&fit=crop&q=60' },
-  { id:'5', name:'ต้มยำกุ้งน้ำข้น หม้อไฟ', price:120, cat:'ต้ม/แกง', img:'https://images.unsplash.com/photo-1548946526-f69e2424cf45?w=400&auto=format&fit=crop&q=60' },
-  { id:'6', name:'ส้มตำไทยไข่เค็ม + ไก่ย่าง', price:80, cat:'ยำ/ส้มตำ', img:'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&auto=format&fit=crop&q=60' },
-  { id:'7', name:'ข้าวหน้าเนื้อย่าง ซอสแจ่ว', price:95, cat:'อาหารจานเดียว', img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&auto=format&fit=crop&q=60' },
-  { id:'8', name:'ชาไทยเย็น หวานมัน', price:35, cat:'เครื่องดื่ม', img:'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=60' },
-  { id:'9', name:'น้ำมะพร้าวน้ำหอมปั่นนมสด', price:45, cat:'เครื่องดื่ม', img:'https://images.unsplash.com/photo-1556881286-fc6915169721?w=400&auto=format&fit=crop&q=60' },
+/* ===========================================================
+   MOCK DATA & STATE MANAGEMENT
+   =========================================================== */
+const MENUS = [
+  // อาหารจานเดียว
+  { id: 1, name: 'ข้าวไข่เจียว / ไข่ดาว', price: 45, category: 'อาหารจานเดียว', img: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60' },
+  { id: 2, name: 'ข้าวผัดไข่', price: 45, category: 'อาหารจานเดียว', img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&auto=format&fit=crop&q=60' },
+  { id: 3, name: 'ข้าวหน้าไก่ทอด', price: 60, category: 'อาหารจานเดียว', img: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&auto=format&fit=crop&q=60' },
+  { id: 4, name: 'ข้าวเหนียวหมูทอด', price: 50, category: 'อาหารจานเดียว', img: 'https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=500&auto=format&fit=crop&q=60' },
+  { id: 5, name: 'ผัดกะเพรา (แบบผัดแห้ง)', price: 65, category: 'อาหารจานเดียว', img: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=500&auto=format&fit=crop&q=60' },
+  // ของทอด
+  { id: 6, name: 'เฟรนช์ฟรายส์', price: 45, category: 'ของทอด', img: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&auto=format&fit=crop&q=60' },
+  { id: 7, name: 'นักเก็ตไก่', price: 49, category: 'ของทอด', img: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&auto=format&fit=crop&q=60' },
+  { id: 8, name: 'ทอดมันปลากราย / หมู', price: 50, category: 'ของทอด', img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=60' },
+  { id: 9, name: 'ลูกชิ้นทอด / ย่าง', price: 45, category: 'ของทอด', img: 'https://images.unsplash.com/photo-1529042410759-befb1204b468?w=500&auto=format&fit=crop&q=60' },
+  { id: 10, name: 'ไก่ป๊อบ', price: 50, category: 'ของทอด', img: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=500&auto=format&fit=crop&q=60' },
+  // ของหวาน
+  { id: 11, name: 'แซนด์วิชโบราณ / หมูหยอง', price: 35, category: 'ของหวาน', img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60' },
+  { id: 12, name: 'ซอฟต์คุกกี้', price: 40, category: 'ของหวาน', img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&auto=format&fit=crop&q=60' },
+  { id: 13, name: 'เค้กกล้วยหอม', price: 25, category: 'ของหวาน', img: 'https://images.unsplash.com/photo-1603532648955-039310d9ed75?w=500&auto=format&fit=crop&q=60' },
+  { id: 14, name: 'โดนัทจิ๋ว (ชุด 4 ชิ้น)', price: 30, category: 'ของหวาน', img: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&auto=format&fit=crop&q=60' },
+  { id: 15, name: 'ปังปิ้งเนยนม / ไมโล', price: 30, category: 'ของหวาน', img: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=500&auto=format&fit=crop&q=60' },
+  // เครื่องดื่ม
+  { id: 16, name: 'น้ำเปล่า (ขวด 500-600 ml)', price: 15, category: 'เครื่องดื่ม', img: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=500&auto=format&fit=crop&q=60' },
+  { id: 17, name: 'นมชมพู / นมเย็น (ขวด PET)', price: 35, category: 'เครื่องดื่ม', img: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&auto=format&fit=crop&q=60' },
+  { id: 18, name: 'น้ำอัดลมกระป๋อง', price: 22, category: 'เครื่องดื่ม', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=60' },
+  { id: 19, name: 'น้ำหล่อฮั้งก้วย (ขวด PET)', price: 30, category: 'เครื่องดื่ม', img: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=500&auto=format&fit=crop&q=60' },
+  { id: 20, name: 'น้ำเก๊กฮวย (ขวด PET)', price: 25, category: 'เครื่องดื่ม', img: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60' }
 ];
-const RESTS = [
-  { n:'ครัวโดรนหลัก', img:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&h=150&fit=crop' },
-  { n:'ร้านส้มตำแซ่บ', img:'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=200&h=150&fit=crop' },
-  { n:'ก๋วยเตี๋ยวป้าแดง', img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&h=150&fit=crop' },
-  { n:'ชาบูหม้อร้อน', img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200&h=150&fit=crop' },
+
+const SHOWCASE_RESTAURANTS = [
+  { name: 'Sky Kitchen Center', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=300&auto=format&fit=crop&q=60' },
+  { name: 'Drone Burger Express', img: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=300&auto=format&fit=crop&q=60' },
+  { name: 'Flash Cafe & Drink', img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop&q=60' }
 ];
 
-let menus = [], cart = {}, curCat = 'ทั้งหมด', qrInt = null;
+let currentUser = null;
+let cart = {}; // { menuId: qty }
+let activeCategory = 'ทั้งหมด';
+let qrTimerInterval = null;
+let droneAnimInterval = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  fillShowcase();
-  buildCats();
-  loadMenus();
-});
+let ordersHistory = [
+  {
+    id: '#SF-88392',
+    date: 'วันนี้, 12:30 น.',
+    items: [{ id: 3, qty: 1 }, { id: 17, qty: 1 }],
+    total: 95,
+    status: 'active',
+    statusText: 'โดรนกำลังบินจัดส่ง'
+  },
+  {
+    id: '#SF-88104',
+    date: 'เมื่อวาน, 18:15 น.',
+    items: [{ id: 5, qty: 1 }, { id: 18, qty: 1 }],
+    total: 93,
+    status: 'completed',
+    statusText: 'จัดส่งสำเร็จ'
+  }
+];
 
-/* ==========================================================
-   NAVIGATION
-   ========================================================== */
-function go(id) {
-  if (id !== 'payment' && qrInt) { clearInterval(qrInt); qrInt = null; }
+/* ===========================================================
+   NAVIGATION & UI CONTROLS
+   =========================================================== */
+function go(screenId) {
   document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
-  const el = document.getElementById('s-' + id);
-  if (el) { el.classList.add('on'); window.scrollTo({ top: 0, behavior: 'instant' }); }
-  
-  // Update Bottom Nav
+  const target = document.getElementById('s-' + screenId);
+  if (target) target.classList.add('on');
+
+  // Bottom Navigation visibility & active status
   const bNav = document.getElementById('bNav');
-  const bNavScreens = ['menu', 'orders', 'profile'];
-  if (bNavScreens.includes(id)) {
+  const navScreens = ['menu', 'orders', 'profile'];
+  if (navScreens.includes(screenId)) {
     bNav.classList.add('on');
-    document.querySelectorAll('.bnav__it').forEach(b => b.classList.remove('on'));
-    const btn = document.getElementById('nav-' + id + '-btn');
-    if (btn) btn.classList.add('on');
+    document.querySelectorAll('.bnav__it').forEach((item, index) => {
+      item.classList.toggle('on', navScreens[index] === screenId);
+    });
   } else {
     bNav.classList.remove('on');
   }
 
-  if (id === 'cart') renderCart();
-  if (id === 'payment') { updPayAmt(); startQr(); }
+  // Lifecycle renders
+  if (screenId === 'menu') renderMenu();
+  if (screenId === 'cart') renderCart();
+  if (screenId === 'orders') renderOrders();
+  if (screenId === 'profile') renderProfile();
+  if (screenId === 'tracking') startDroneMapAnimation();
 }
 
-function switchOrderTab(tab) {
-  document.querySelectorAll('.tabs__btn').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.tab-cnt').forEach(c => c.classList.remove('on'));
-  document.getElementById('tab-' + tab).classList.add('on');
-  document.getElementById('ord-' + tab).classList.add('on');
-}
-
-/* ==========================================================
-   HELPERS
-   ========================================================== */
-function openM(id) { document.getElementById(id).classList.add('on'); }
-function closeM(id) { document.getElementById(id).classList.remove('on'); }
 function toast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('on');
+  t.innerText = msg;
+  t.classList.add('on');
   setTimeout(() => t.classList.remove('on'), 2500);
 }
-function alert2(type, title, msg) {
-  const ic = document.getElementById('alIc');
-  ic.className = 'modal__ic';
-  if (type === 'error') { ic.classList.add('modal__ic--err'); ic.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>'; }
-  else if (type === 'success') { ic.classList.add('modal__ic--ok'); ic.innerHTML = '<i class="fa-solid fa-circle-check"></i>'; }
-  else { ic.classList.add('modal__ic--info'); ic.innerHTML = '<i class="fa-solid fa-circle-info"></i>'; }
-  document.getElementById('alT').textContent = title;
-  document.getElementById('alMsg').textContent = msg;
-  openM('m-alert');
+
+function openM(type, msgCustom) {
+  const m = document.getElementById('modal');
+  const ic = document.getElementById('mIc');
+  const tt = document.getElementById('mTt');
+  const msg = document.getElementById('mMsg');
+
+  if (type === 'm-forgot') {
+    ic.className = 'modal__ic modal__ic--info';
+    ic.innerHTML = '<i class="fa-solid fa-key"></i>';
+    tt.innerText = 'ลืมรหัสผ่าน';
+    msg.innerText = 'ระบบได้ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณเรียบร้อยแล้ว';
+  } else {
+    ic.className = 'modal__ic modal__ic--info';
+    ic.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+    tt.innerText = 'แจ้งเตือน';
+    msg.innerText = msgCustom || '';
+  }
+  m.classList.add('on');
 }
 
-/* ==========================================================
-   AUTH
-   ========================================================== */
+function closeM() {
+  document.getElementById('modal').classList.remove('on');
+}
+
+/* ===========================================================
+   AUTH LOGIC
+   =========================================================== */
 function doLogin(e) {
   e.preventDefault();
-  const em = document.getElementById('lEmail').value.trim(), pw = document.getElementById('lPass').value;
-  if (!em || !pw) { alert2('error', 'แจ้งเตือน', 'กรุณากรอกอีเมลและรหัสผ่าน'); return; }
-  if (sb) {
-    sb.auth.signInWithPassword({ email: em, password: pw }).then(({ error }) => {
-      if (error) { toast('เข้าสู่ระบบ Demo Mode'); go('menu'); }
-      else { toast('เข้าสู่ระบบสำเร็จ!'); go('menu'); }
-    });
-  } else { toast('เข้าสู่ระบบ Demo Mode'); go('menu'); }
+  const email = document.getElementById('lEmail').value;
+  currentUser = {
+    name: email.split('@')[0] || 'User',
+    email: email
+  };
+  toast('เข้าสู่ระบบสำเร็จ!');
+  go('menu');
 }
+
 function doGoogleLogin() {
-  if (sb) { sb.auth.signInWithOAuth({ provider: 'google' }).then(({ error }) => { if (error) alert2('error', 'แจ้งเตือน', error.message); }); }
-  else { toast('Demo Mode'); go('menu'); }
+  currentUser = { name: 'Demo User', email: 'user.google@skyflash.io' };
+  toast('เข้าสู่ระบบด้วย Google สำเร็จ');
+  go('menu');
 }
-function doLogout() { cart = {}; updBar(); if (sb) sb.auth.signOut(); toast('ออกจากระบบแล้ว'); go('login'); }
-function doForgot() {
-  const em = document.getElementById('forgotEmail').value.trim();
-  if (!em) { alert2('error', 'แจ้งเตือน', 'กรุณากรอกอีเมล'); return; }
-  closeM('m-forgot');
-  if (sb) { sb.auth.resetPasswordForEmail(em).then(({ error }) => {
-    if (error) alert2('error', 'แจ้งเตือน', error.message);
-    else alert2('success', 'สำเร็จ', 'ส่งลิงก์รีเซ็ตไปยังอีเมลแล้ว');
-  }); } else alert2('info', 'Demo', 'ระบบ Demo ไม่สามารถส่งอีเมลได้');
-}
+
 function doRegister(e) {
   e.preventDefault();
-  const u = document.getElementById('rUser').value.trim(), em = document.getElementById('rEmail').value.trim(), pw = document.getElementById('rPass').value;
-  if (!u || !em || pw.length < 6) { alert2('error', 'แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบ (รหัสผ่านอย่างน้อย 6 ตัว)'); return; }
-  if (sb) {
-    sb.auth.signUp({ email: em, password: pw, options: { data: { username: u, phone: document.getElementById('rPhone').value, address: document.getElementById('rAddr').value } } }).then(({ error }) => {
-      if (error) alert2('error', 'แจ้งเตือน', error.message);
-      else { alert2('success', 'สำเร็จ', 'ลงทะเบียนสำเร็จ!'); setTimeout(() => { closeM('m-alert'); go('login'); }, 2000); }
-    });
-  } else { alert2('success', 'สำเร็จ', 'ลงทะเบียนสำเร็จ (Demo)'); setTimeout(() => { closeM('m-alert'); go('login'); }, 2000); }
+  const name = document.getElementById('rUser').value;
+  const email = document.getElementById('rEmail').value;
+  currentUser = { name, email };
+  toast('ลงทะเบียนสำเร็จ');
+  go('menu');
 }
 
-/* ==========================================================
-   SHOWCASE & CAROUSEL
-   ========================================================== */
-function fillShowcase() {
-  document.getElementById('sh-rest').innerHTML = RESTS.map(r => `<div class="mcard" style="cursor:pointer" onclick="document.getElementById('searchInp').value='${r.n}'; filterM(); go('menu');"><img src="${r.img}" alt="${r.n}"><div class="mcard__lb">${r.n}</div></div>`).join('');
-  document.getElementById('sh-menu').innerHTML = MOCK.slice(0, 6).map(m => `<div class="mcard"><img src="${m.img}" alt="${m.name}"><div class="mcard__lb">${m.name}</div></div>`).join('');
-  
-  initCarousel('car-rest', 'sh-rest', 'nav-rest');
-  initCarousel('car-menu', 'sh-menu', 'nav-menu');
+function doLogout() {
+  currentUser = null;
+  cart = {};
+  toast('ออกจากระบบแล้ว');
+  go('login');
 }
 
-function initCarousel(wrapId, trackId, navId) {
-  const track = document.getElementById(trackId);
-  const nav = document.getElementById(navId);
-  const cards = track.children;
-  if (!cards.length) return;
-  
-  // Calculate pages
-  const itemsPerPage = 3; // roughly 3 items per view
-  const pages = Math.ceil(cards.length / itemsPerPage);
-  
-  // Create dots
-  nav.innerHTML = Array(pages).fill(0).map((_, i) => `<button class="carousel__dot${i===0?' on':''}" data-idx="${i}"></button>`).join('');
-  
-  let cur = 0;
-  const move = (idx) => {
-    cur = idx;
-    // item width = 130 + gap 10 = 140
-    track.style.transform = `translateX(-${cur * 140 * itemsPerPage}px)`;
-    Array.from(nav.children).forEach((d, i) => d.className = `carousel__dot${i===cur?' on':''}`);
-  };
-  
-  nav.addEventListener('click', e => {
-    if (e.target.classList.contains('carousel__dot')) {
-      move(parseInt(e.target.dataset.idx));
-      resetTimer();
-    }
-  });
-
-  // Auto scroll
-  let int;
-  const startTimer = () => { int = setInterval(() => { move((cur + 1) % pages); }, 3500); };
-  const resetTimer = () => { clearInterval(int); startTimer(); };
-  startTimer();
-}
-
-/* ==========================================================
-   CATEGORY
-   ========================================================== */
-function buildCats() {
-  document.getElementById('catBar').innerHTML = CATS.map(c => `<button class="chip ${c === curCat ? 'chip--on' : 'chip--off'}" onclick="pickCat('${c}')">${c}</button>`).join('');
-}
-function pickCat(c) { curCat = c; buildCats(); filterM(); }
-
-/* ==========================================================
-   MENU
-   ========================================================== */
-async function loadMenus() {
-  if (sb) { try {
-    const { data, error } = await sb.from('menus').select('*').eq('is_available', true).limit(20);
-    if (!error && data && data.length > 0) {
-      menus = data.map(d => ({ id: String(d.id), name: d.name, price: Number(d.price) || 35, cat: d.category || 'อาหารจานเดียว', img: d.image_url || MOCK[0].img }));
-      renderGrid(); return;
-    }
-  } catch(e) { console.warn(e); } }
-  menus = MOCK; renderGrid();
-}
-function renderGrid() {
-  const q = document.getElementById('searchInp').value.toLowerCase();
-  const g = document.getElementById('foodGrid');
-  const f = menus.filter(m => (curCat === 'ทั้งหมด' || m.cat === curCat) && m.name.toLowerCase().includes(q));
-  if (!f.length) { g.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text3);padding:40px"><i class="fa-solid fa-utensils" style="font-size:28px;display:block;margin-bottom:8px;color:var(--border)"></i>ไม่พบเมนูที่ค้นหา</div>'; return; }
-  g.innerHTML = f.map(m => {
-    const sel = cart[m.id] && cart[m.id] > 0;
-    return `<div class="fcard${sel ? ' sel' : ''}" onclick="toggleSel('${m.id}')">
-      <div class="fcard__img-wrap"><img class="fcard__img" src="${m.img}" alt="${m.name}" loading="lazy"><div class="fcard__chk"><i class="fa-solid fa-check"></i></div></div>
-      <div class="fcard__body"><div class="fcard__name">${m.name}</div><div class="fcard__price">฿${m.price}</div>
-      <button class="fcard__add" onclick="event.stopPropagation();addCart('${m.id}')"><i class="fa-solid fa-plus" style="font-size:10px"></i> เพิ่ม</button></div></div>`;
-  }).join('');
-}
-function filterM() { renderGrid(); }
-function toggleSel(id) { if (cart[id] && cart[id] > 0) delete cart[id]; else cart[id] = 1; updBar(); renderGrid(); }
-function addCart(id) { cart[id] = (cart[id] || 0) + 1; updBar(); renderGrid(); toast('เพิ่มลงตะกร้า +' + cart[id]); }
-
-/* ==========================================================
-   CART
-   ========================================================== */
-function updBar() {
-  const n = Object.values(cart).reduce((a, b) => a + b, 0);
-  const bar = document.getElementById('stkBar');
-  if (n > 0) { bar.style.display = 'block'; document.getElementById('stkCnt').textContent = n; } else bar.style.display = 'none';
-}
-function totals() {
-  let sub = 0; const ids = Object.keys(cart).filter(id => cart[id] > 0);
-  ids.forEach(id => { const m = menus.find(x => x.id === id); if (m) sub += m.price * cart[id]; });
-  return { sub, del: ids.length ? 20 : 0, total: sub + (ids.length ? 20 : 0), ids };
-}
-function renderCart() {
-  const c = document.getElementById('cartBox'), { sub, total, ids } = totals();
-  if (!ids.length) c.innerHTML = '<div class="cart-empty"><i class="fa-solid fa-bag-shopping"></i><div>ไม่มีรายการในตะกร้า</div></div>';
-  else c.innerHTML = ids.map(id => { const m = menus.find(x => x.id === id); if (!m) return ''; return `<div class="ci"><div class="ci__info"><div class="ci__name">${m.name}</div><div class="ci__price">฿${m.price} × ${cart[id]} = ฿${m.price * cart[id]}</div></div><div class="qty"><button class="qty__btn" onclick="chgQty('${id}',-1)"><i class="fa-solid fa-minus"></i></button><span class="qty__num">${cart[id]}</span><button class="qty__btn" onclick="chgQty('${id}',1)"><i class="fa-solid fa-plus"></i></button></div></div>`; }).join('');
-  document.getElementById('sSub').textContent = '฿' + sub;
-  document.getElementById('sTotal').textContent = '฿' + total;
-  document.getElementById('btnPay').disabled = !ids.length;
-}
-function chgQty(id, d) { if (cart[id] !== undefined) { cart[id] += d; if (cart[id] <= 0) delete cart[id]; } updBar(); renderCart(); }
-
-/* ==========================================================
-   PAYMENT QR
-   ========================================================== */
-function updPayAmt() { const { total } = totals(); document.getElementById('qrAmt').textContent = '฿' + total.toFixed(2); document.getElementById('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PromptPay-SkyFLASH-' + total; }
-function startQr() {
-  let t = 300; if (qrInt) clearInterval(qrInt);
-  const el = document.getElementById('qrTm'), st = document.getElementById('qrSt');
-  el.classList.remove('exp'); st.className = 'qr-status qr-status--wait'; st.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>รอการโอนเงิน...</span>';
-  qrInt = setInterval(() => { t--; el.textContent = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); if (t <= 0) { clearInterval(qrInt); qrInt = null; el.textContent = 'หมดเวลา'; el.classList.add('exp'); } }, 1000);
-}
-async function payOk() {
-  if (qrInt) { clearInterval(qrInt); qrInt = null; }
-  const { sub, total, ids } = totals();
-  if (!ids.length) { alert2('error', 'แจ้งเตือน', 'ไม่มีรายการในตะกร้า'); return; }
-  document.getElementById('qrSt').className = 'qr-status qr-status--ok';
-  document.getElementById('qrSt').innerHTML = '<i class="fa-solid fa-circle-check"></i><span>ชำระเงินสำเร็จ!</span>';
-  if (sb) { try { const items = ids.map(id => { const m = menus.find(x => x.id === id); return { name: m.name, qty: cart[id], price: m.price }; }); await sb.from('orders').insert([{ restaurant_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', items, food_total: sub, delivery_fee: 20, grand_total: total, status: 'pending', payment_method: 'qr_code', payment_status: 'paid' }]); } catch(e) { console.log(e); } }
-  setTimeout(() => startTracking(total), 800);
-}
-
-/* ==========================================================
-   ORDER TRACKING
-   ========================================================== */
-const TL = [
-  { t: 'ร้านค้ารับออเดอร์แล้ว', s: 'กำลังปรุงอาหารตามออเดอร์', ic: 'fa-utensils' },
-  { t: 'โดรน SkyFLASH กำลังบินจัดส่ง', s: 'กำลังบินนำส่งด้วยความเร็วอัตโนมัติ (GPS)', ic: 'fa-plane' },
-  { t: 'ส่งอาหารสำเร็จ ณ จุดรับ', s: 'โดรนลงจอดและส่งมอบอาหารเรียบร้อย ทานให้อร่อยครับ!', ic: 'fa-circle-check' },
-];
-let tStep = 0, tInt = null;
-
-function startTracking(total) {
-  go('tracking'); tStep = 0;
-  const ordId = '#SKF-' + String(Math.floor(Math.random() * 9000 + 1000));
-  document.getElementById('tOrdId').textContent = ordId;
-  document.getElementById('tPayInfo').textContent = 'PromptPay QR (ยืนยันแล้ว) • ฿' + total.toFixed(0);
-  // Build items
-  const { sub, ids } = totals();
-  let h = '<div style="font-size:15px;font-weight:600;margin-bottom:10px">สรุปรายการอาหาร</div>';
-  let firstItem = '';
-  ids.forEach(id => { 
-    const m = menus.find(x => x.id === id); 
-    if (m) { 
-      if (!firstItem) firstItem = m.name;
-      h += `<div class="track-sum__row"><span>${m.name} × ${cart[id]}</span><span>฿${m.price * cart[id]}</span></div>`; 
-    } 
-  });
-  h += '<div class="track-sum__div"></div>';
-  h += `<div class="track-sum__total"><span>ยอดรวมสุทธิ</span><span style="color:var(--pink)">฿${total.toFixed(0)}</span></div>`;
-  document.getElementById('trackItems').innerHTML = h;
-
-  // Add to active orders
-  document.getElementById('no-active-ord').style.display = 'none';
-  const activeList = document.getElementById('active-list');
-  const d = new Date(); const timeStr = `${d.getDate()} ส.ค. 69, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  const activeHtml = `
-    <div class="ord-card" onclick="go('tracking')">
-      <div class="ord-card__head"><span class="ord-card__id">${ordId}</span><span class="ord-card__date">${timeStr}</span></div>
-      <div class="ord-card__body">
-        <div class="ord-card__ic ord-card__ic--act"><i class="fa-solid fa-plane"></i></div>
-        <div class="ord-card__det">
-          <div class="ord-card__st ord-card__st--act" id="st-${ordId}">กำลังปรุงอาหาร</div>
-          <div class="ord-card__sum">${firstItem}... (${ids.length} รายการ)</div>
-        </div>
-        <div class="ord-card__price">฿${total.toFixed(0)}</div>
+/* ===========================================================
+   SHOWCASE / CAROUSEL
+   =========================================================== */
+function initShowcase() {
+  // Render Restaurants
+  const shRest = document.getElementById('sh-rest');
+  if (shRest) {
+    shRest.innerHTML = SHOWCASE_RESTAURANTS.map(r => `
+      <div class="mcard">
+        <img src="${r.img}" alt="${r.name}">
+        <div class="mcard__lb">${r.name}</div>
       </div>
-    </div>`;
-  activeList.insertAdjacentHTML('afterbegin', activeHtml);
+    `).join('');
+  }
 
-  renderTL(); moveDrone();
-  if (tInt) clearInterval(tInt);
-  tInt = setInterval(() => { 
-    if (tStep < TL.length - 1) { 
-      tStep++; renderTL(); moveDrone(); 
-      const stEl = document.getElementById('st-'+ordId);
-      if (stEl) stEl.textContent = TL[tStep].t;
-    } else { 
-      clearInterval(tInt); tInt = null; 
-      const stEl = document.getElementById('st-'+ordId);
-      if (stEl) {
-        stEl.textContent = 'จัดส่งสำเร็จ';
-        stEl.className = 'ord-card__st ord-card__st--done';
-        stEl.parentElement.previousElementSibling.className = 'ord-card__ic ord-card__ic--done';
-        stEl.parentElement.previousElementSibling.innerHTML = '<i class="fa-solid fa-check"></i>';
-      }
-    } 
-  }, 8000);
+  // Render Popular Menus
+  const shMenu = document.getElementById('sh-menu');
+  if (shMenu) {
+    const populars = MENUS.slice(0, 5);
+    shMenu.innerHTML = populars.map(m => `
+      <div class="mcard">
+        <img src="${m.img}" alt="${m.name}">
+        <div class="mcard__lb">${m.name}</div>
+      </div>
+    `).join('');
+  }
 }
-function renderTL() {
-  document.getElementById('timeline').innerHTML = TL.map((s, i) => {
-    const done = tStep > i, now = tStep === i, last = i === TL.length - 1, on = done || now;
-    return `<div class="tl-step"><div class="tl-step__rail"><div class="tl-dot${done ? ' tl-dot--done' : now ? ' tl-dot--now' : ''}"><i class="fa-solid ${done ? 'fa-check' : s.ic}"></i></div>${!last ? `<div class="tl-line${done ? ' tl-line--done' : ''}"></div>` : ''}</div><div class="tl-step__text"><div class="tl-step__title${on ? ' on' : ''}">${s.t}</div><div class="tl-step__sub${on ? ' on' : ''}">${s.s}</div></div></div>`;
+
+/* ===========================================================
+   MENU RENDER & CART SYSTEM
+   =========================================================== */
+function renderMenu() {
+  // Render Category Chips
+  const categories = ['ทั้งหมด', 'อาหารจานเดียว', 'ของทอด', 'ของหวาน', 'เครื่องดื่ม'];
+  const catBar = document.getElementById('catBar');
+  catBar.innerHTML = categories.map(c => `
+    <button class="chip ${c === activeCategory ? 'chip--on' : 'chip--off'}" onclick="setCategory('${c}')">${c}</button>
+  `).join('');
+
+  filterM();
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  renderMenu();
+}
+
+function filterM() {
+  const q = document.getElementById('searchInp').value.toLowerCase();
+  const grid = document.getElementById('foodGrid');
+
+  const filtered = MENUS.filter(m => {
+    const matchCat = activeCategory === 'ทั้งหมด' || m.category === activeCategory;
+    const matchQ = m.name.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+
+  grid.innerHTML = filtered.map(m => {
+    const qty = cart[m.id] || 0;
+    const isSel = qty > 0;
+    return `
+      <div class="fcard ${isSel ? 'sel' : ''}">
+        <div class="fcard__img-wrap">
+          <img class="fcard__img" src="${m.img}" alt="${m.name}">
+          <div class="fcard__chk"><i class="fa-solid fa-check"></i></div>
+        </div>
+        <div class="fcard__body">
+          <div class="fcard__name">${m.name}</div>
+          <div class="fcard__price">฿${m.price}</div>
+          <button class="fcard__add" onclick="addToCart(${m.id})">
+            <i class="fa-solid fa-plus"></i> ${qty > 0 ? `เพิ่มอีก (${qty})` : 'เพิ่มลงตะกร้า'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  updateStkBar();
+}
+
+function addToCart(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  filterM();
+  toast('เพิ่มลงตะกร้าแล้ว');
+}
+
+function updateCartQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id] += delta;
+  if (cart[id] <= 0) delete cart[id];
+  renderCart();
+  updateStkBar();
+}
+
+function updateStkBar() {
+  const totalCnt = Object.values(cart).reduce((a, b) => a + b, 0);
+  const stk = document.getElementById('stkBar');
+  const stkCnt = document.getElementById('stkCnt');
+  if (totalCnt > 0) {
+    stk.style.display = 'block';
+    stkCnt.innerText = totalCnt;
+  } else {
+    stk.style.display = 'none';
+  }
+}
+
+/* ===========================================================
+   CART SCREEN
+   =========================================================== */
+function renderCart() {
+  const box = document.getElementById('cartBox');
+  const items = Object.keys(cart).map(id => {
+    const item = MENUS.find(m => m.id == id);
+    return { ...item, qty: cart[id] };
+  });
+
+  if (items.length === 0) {
+    box.innerHTML = `
+      <div class="cart-empty">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <div>ตะกร้าสินค้าของคุณยังว่างอยู่</div>
+      </div>
+    `;
+    document.getElementById('sSub').innerText = '฿0';
+    document.getElementById('sTotal').innerText = '฿20';
+    document.getElementById('btnPay').disabled = true;
+    return;
+  }
+
+  document.getElementById('btnPay').disabled = false;
+  box.innerHTML = items.map(i => `
+    <div class="ci">
+      <div class="ci__info">
+        <div class="ci__name">${i.name}</div>
+        <div class="ci__price">฿${i.price * i.qty}</div>
+      </div>
+      <div class="qty">
+        <button class="qty__btn" onclick="updateCartQty(${i.id}, -1)"><i class="fa-solid fa-minus"></i></button>
+        <span class="qty__num">${i.qty}</span>
+        <button class="qty__btn" onclick="updateCartQty(${i.id}, 1)"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+  `).join('');
+
+  const sub = items.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  document.getElementById('sSub').innerText = `฿${sub}`;
+  document.getElementById('sTotal').innerText = `฿${sub + 20}`;
+  document.getElementById('qrAmt').innerText = `฿${(sub + 20).toFixed(2)}`;
+}
+
+/* ===========================================================
+   PAYMENT & COUNTDOWN
+   =========================================================== */
+function startQrTimer() {
+  clearInterval(qrTimerInterval);
+  let timeLeft = 300; // 5 minutes
+  const timerEl = document.getElementById('qrTm');
+
+  qrTimerInterval = setInterval(() => {
+    const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+    const s = (timeLeft % 60).toString().padStart(2, '0');
+    timerEl.innerText = `${m}:${s}`;
+
+    if (timeLeft <= 0) {
+      clearInterval(qrTimerInterval);
+      timerEl.classList.add('exp');
+      timerEl.innerText = 'หมดเวลา';
+    }
+    timeLeft--;
+  }, 1000);
+}
+
+function payOk() {
+  clearInterval(qrTimerInterval);
+  const items = Object.keys(cart).map(id => ({ id: Number(id), qty: cart[id] }));
+  const sub = items.reduce((sum, i) => {
+    const m = MENUS.find(x => x.id === i.id);
+    return sum + (m ? m.price * i.qty : 0);
+  }, 0);
+
+  const newOrd = {
+    id: '#SF-' + Math.floor(10000 + Math.random() * 90000),
+    date: 'วันนี้, เพิ่งสั่งซื้อ',
+    items: items,
+    total: sub + 20,
+    status: 'active',
+    statusText: 'โดรนกำลังเตรียมจัดส่ง'
+  };
+
+  ordersHistory.unshift(newOrd);
+  cart = {}; // Clear cart
+  toast('ชำระเงินสำเร็จแล้ว!');
+  go('tracking');
+}
+
+/* ===========================================================
+   ORDER TRACKING & SIMULATION
+   =========================================================== */
+function startDroneMapAnimation() {
+  const drone = document.getElementById('droneIcon');
+  let pos = 20;
+  clearInterval(droneAnimInterval);
+  droneAnimInterval = setInterval(() => {
+    pos = pos >= 75 ? 20 : pos + 10;
+    drone.style.left = pos + '%';
+    drone.style.top = (80 - pos) + '%';
+  }, 2000);
+
+  // Render latest order details
+  const activeOrd = ordersHistory[0] || ordersHistory[1];
+  document.getElementById('trkId').innerText = activeOrd.id;
+  document.getElementById('trkTotal').innerText = `฿${activeOrd.total}`;
+
+  document.getElementById('trkItems').innerHTML = activeOrd.items.map(i => {
+    const m = MENUS.find(x => x.id === i.id);
+    return `
+      <div class="track-sum__row">
+        <span>${m ? m.name : 'อาหาร'} x ${i.qty}</span>
+        <span>฿${(m ? m.price : 0) * i.qty}</span>
+      </div>
+    `;
   }).join('');
 }
-function moveDrone() {
-  const d = document.getElementById('droneEl');
-  const pos = [{ bottom: '22px', left: '50px', top: 'auto', right: 'auto' }, { bottom: '50%', left: '45%', top: 'auto', right: 'auto' }, { top: '22px', right: '50px', bottom: 'auto', left: 'auto' }];
-  const p = pos[Math.min(tStep, pos.length - 1)];
-  Object.assign(d.style, p);
+
+/* ===========================================================
+   ORDERS HISTORY TAB
+   =========================================================== */
+function switchTab(btn, tabId) {
+  document.querySelectorAll('.tabs__btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab-cnt').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(tabId).classList.add('on');
 }
+
+function renderOrders() {
+  const activeList = document.getElementById('activeOrdersList');
+  const historyList = document.getElementById('historyOrdersList');
+
+  const actives = ordersHistory.filter(o => o.status === 'active');
+  const completed = ordersHistory.filter(o => o.status === 'completed');
+
+  activeList.innerHTML = actives.length ? actives.map(o => `
+    <div class="ord-card" onclick="go('tracking')">
+      <div class="ord-card__head">
+        <span class="ord-card__id">${o.id}</span>
+        <span class="ord-card__date">${o.date}</span>
+      </div>
+      <div class="ord-card__body">
+        <div class="ord-card__ic ord-card__ic--act"><i class="fa-solid fa-drone"></i></div>
+        <div class="ord-card__det">
+          <div class="ord-card__st ord-card__st--act">${o.statusText}</div>
+          <div class="ord-card__sum">${o.items.length} รายการ</div>
+        </div>
+        <div class="ord-card__price">฿${o.total}</div>
+      </div>
+    </div>
+  `).join('') : '<div style="text-align:center;padding:40px;color:var(--text3)">ไม่มีออเดอร์ที่กำลังดำเนินการ</div>';
+
+  historyList.innerHTML = completed.length ? completed.map(o => `
+    <div class="ord-card">
+      <div class="ord-card__head">
+        <span class="ord-card__id">${o.id}</span>
+        <span class="ord-card__date">${o.date}</span>
+      </div>
+      <div class="ord-card__body">
+        <div class="ord-card__ic ord-card__ic--done"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="ord-card__det">
+          <div class="ord-card__st ord-card__st--done">${o.statusText}</div>
+          <div class="ord-card__sum">${o.items.length} รายการ</div>
+        </div>
+        <div class="ord-card__price">฿${o.total}</div>
+      </div>
+    </div>
+  `).join('') : '<div style="text-align:center;padding:40px;color:var(--text3)">ไม่มีประวัติการสั่งซื้อ</div>';
+}
+
+/* ===========================================================
+   PROFILE RENDER
+   =========================================================== */
+function renderProfile() {
+  if (currentUser) {
+    document.getElementById('pName').innerText = currentUser.name;
+    document.getElementById('pEmail').innerText = currentUser.email;
+    document.getElementById('pAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
+  }
+}
+
+/* ===========================================================
+   INIT APP
+   =========================================================== */
+window.addEventListener('DOMContentLoaded', () => {
+  initShowcase();
+});
 </script>
 </body>
 </html>

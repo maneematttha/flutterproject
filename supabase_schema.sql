@@ -134,7 +134,7 @@ BEGIN
     ) THEN
         ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
     END IF;
-    
+
     IF NOT EXISTS (
         SELECT 1 FROM pg_publication_tables 
         WHERE pubname = 'supabase_realtime' AND tablename = 'drones'
@@ -207,20 +207,43 @@ VALUES (
     true
 ) ON CONFLICT (id) DO NOTHING;
 
--- 2. เพิ่มรายการเมนูอาหารไทย
-INSERT INTO public.menus (restaurant_id, name, description, price, category, image_url, is_available) VALUES
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ข้าวกะเพราหมูกรอบ ไข่ดาว', 'หมูกรอบสูตรเด็ด ผัดกะเพรารสจัดจ้าน เสิร์ฟพร้อมไข่ดาวกรอบ', 65.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=500&auto=format&fit=crop&q=60', true),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ข้าวผัดต้มยำกุ้งแม่น้ำ', 'ข้าวผัดเครื่องต้มยำหอมกรุ่น กุ้งแม่น้ำตัวใหญ่สดฉ่ำ', 85.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=500&auto=format&fit=crop&q=60', true),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ผัดไทยกุ้งสด ห่อไข่', 'เส้นจันท์เหนียวนุ่ม ผัดซอสมะขามสูตรโบราณ กุ้งสดตัวโต', 75.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&auto=format&fit=crop&q=60', true),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ข้าวหมูกรอบ คั่วพริกเกลือ', 'หมูกรอบคั่วกระเทียมพริกเกลือ คลุกข้าวสวยร้อนๆ', 60.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&auto=format&fit=crop&q=60', true),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ต้มยำกุ้งน้ำข้น หม้อไฟ', 'ต้มยำน้ำข้นครบรส เปรี้ยว เผ็ด มัน หอมสมุนไพรไทย', 120.00, 'ต้ม/แกง', 'https://images.unsplash.com/photo-1548946526-f69e2424cf45?w=500&auto=format&fit=crop&q=60', true),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ส้มตำไทยไข่เค็ม + ไก่ย่าง', 'ส้มตำรสแซ่บ เส้นกรอบ พร้อมไก่ย่างหมักสมุนไพร', 80.00, 'ยำ/ส้มตำ', 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=500&auto=format&fit=crop&q=60', true),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ข้าวหน้าเนื้อย่าง ซอสแจ่ว', 'เนื้อวัวคัดพิเศษย่างหอมๆ เสิร์ฟคู่น้ำจิ้มแจ่วรสเด็ด', 95.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=60', true),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ชาไทยเย็น หวานมัน', 'ชาตรามือพรีเมียม ชงสดหวานมันกลมกล่อม', 35.00, 'เครื่องดื่ม', 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60', true),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'น้ำมะพร้าวน้ำหอมปั่นนมสด', 'มะพร้าวน้ำหอมสดปั่นนมสด หอมหวานชื่นใจ', 45.00, 'เครื่องดื่ม', 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&auto=format&fit=crop&q=60', true);
-
--- 3. เพิ่มโดรนเริ่มต้น 2 ลำ
+-- 2. เพิ่มโดรนเริ่มต้น 2 ลำ
 INSERT INTO public.drones (id, name, model, status, current_lat, current_lng, current_altitude, battery_level, speed) VALUES
 ('DRONE-01', 'SkyFLASH Alpha-1', 'Raspberry Pi 5 Octacopter', 'idle', 13.7563, 100.5018, 0.0, 100, 0.0),
 ('DRONE-02', 'SkyFLASH Beta-2', 'Raspberry Pi 5 Hexacopter', 'idle', 13.7570, 100.5025, 0.0, 95, 0.0)
 ON CONFLICT (id) DO NOTHING;
+
+-- ==============================================================================
+-- 🍱 เพิ่มรายการเมนูอาหารและราคาปรับปรุงใหม่ (20 รายการ)
+-- ==============================================================================
+DELETE FROM public.menus WHERE restaurant_id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+
+INSERT INTO public.menus (restaurant_id, name, description, price, category, image_url, is_available) VALUES
+
+-- 1. หมวดของคาว (อาหารจานเดียว)
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ข้าวไข่เจียว / ไข่ดาว', 'ข้าวสวยร้อนๆ เสิร์ฟพร้อมไข่เจียวฟูนุ่มหรือไข่ดาวตามชอบ', 45.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ข้าวผัดไข่', 'ข้าวผัดไข่หอมกลิ่นกระทะ รสชาติกลมกล่อม ทานง่าย', 45.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ข้าวหน้าไก่ทอด', 'ข้าวสวยท็อปด้วยไก่ทอดกรอบนอกนุ่มใน ราดซอสฉ่ำๆ', 60.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ข้าวเหนียวหมูทอด', 'ข้าวเหนียวนุ่มๆ เสิร์ฟคู่หมูทอดรสเข้มข้น อิ่มท้องง่ายๆ', 50.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ผัดกะเพรา (แบบผัดแห้ง)', 'กะเพราผัดแห้งหอมกลิ่นพริกกระเทียม รสจัดจ้านไม่เลอะเทอะ', 65.00, 'อาหารจานเดียว', 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=500&auto=format&fit=crop&q=60', true),
+
+-- 2. หมวดของทอด
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'เฟรนช์ฟรายส์', 'มันฝรั่งทอดกรอบนอกนุ่มใน โรยเกลือหอมๆ พร้อมซอสพรีเมียม', 45.00, 'ของทอด', 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'นักเก็ตไก่', 'นักเก็ตไก่ทอดกรอบ 5 ชิ้น เนื้อแน่นเต็มคำ', 49.00, 'ของทอด', 'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ทอดมันปลากราย / หมู', 'ทอดมันเนื้อเหนียวนุ่ม หอมกลิ่นพริกแกงและใบมะกรูด', 50.00, 'ของทอด', 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ลูกชิ้นทอด / ย่าง', 'ลูกชิ้นเนื้อแน่นทอด/ย่างร้อนๆ เสิร์ฟพร้อมน้ำจิ้มสูตรเด็ด', 45.00, 'ของทอด', 'https://images.unsplash.com/photo-1529042410759-befb1204b468?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ไก่ป๊อบ', 'ไก่ทอดชิ้นพอดีคำ กรอบนอกนุ่มใน ทานเพลิน', 50.00, 'ของทอด', 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=500&auto=format&fit=crop&q=60', true),
+
+-- 3. หมวดของหวาน
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'แซนด์วิชโบราณ / หมูหยอง', 'แซนด์วิชไส้แน่น ราดซอสโบราณฉ่ำๆ หอมหวานลงตัว', 35.00, 'ของหวาน', 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ซอฟต์คุกกี้', 'คุกกี้เนื้อนุ่ม หอมเนยแท้ ช็อกโกแลตเข้มข้น', 40.00, 'ของหวาน', 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'เค้กกล้วยหอม', 'เค้กกล้วยหอมนุ่มฟู หอมกลิ่นกล้วยธรรมชาติ', 25.00, 'ของหวาน', 'https://images.unsplash.com/photo-1603532648955-039310d9ed75?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'โดนัทจิ๋ว (ชุด 4 ชิ้น)', 'โดนัทจิ๋วเนื้อนุ่ม 4 ชิ้น เคลือบแต่งหน้าหวานกำลังดี', 30.00, 'ของหวาน', 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'ปังปิ้งเนยนม / ไมโล', 'ขนมปังปิ้งกรอบนอกนุ่มใน ทาเนยฉ่ำๆ ราดนมข้นและผงไมโล', 30.00, 'ของหวาน', 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=500&auto=format&fit=crop&q=60', true),
+
+-- 4. หมวดเครื่องดื่ม
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'น้ำเปล่า (ขวด 500-600 ml)', 'น้ำดื่มสะอาด เย็นสดชื่น ดับกระหาย', 15.00, 'เครื่องดื่ม', 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'นมชมพู / นมเย็น (ขวด PET)', 'นมเย็นหวานมัน หอมกลิ่นนมและน้ำหวานสีแดง', 35.00, 'เครื่องดื่ม', 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'น้ำอัดลมกระป๋อง', 'น้ำอัดลมซ่าสดชื่น แช่เย็นพร้อมดื่ม', 22.00, 'เครื่องดื่ม', 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'น้ำหล่อฮั้งก้วย (ขวด PET)', 'น้ำสมุนไพรหล่อฮั้งก้วย หอมหวานกลมกล่อม แก้ร้อนใน', 30.00, 'เครื่องดื่ม', 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=500&auto=format&fit=crop&q=60', true),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'น้ำเก๊กฮวย (ขวด PET)', 'น้ำเก๊กฮวยหอมหวาน ดับกระหาย แก้ร้อนใน สดชื่น', 25.00, 'เครื่องดื่ม', 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60', true);
